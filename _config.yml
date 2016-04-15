@@ -8,9 +8,11 @@ github_username:  m0sen
 copyright: "Commons Attribution 4.0 International"
 
 # Build settings
-markdown: kramdown
-
+markdown: Markright
+kramdown:
+coderay_line_numbers: nil
 encoding: utf-8
+timezone: Asia/Tehran
 paginate: 5
 paginate_path: "/page:num/"
 tag_page_layout: tag_page
