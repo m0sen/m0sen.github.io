@@ -9,6 +9,7 @@ copyright: "Commons Attribution 4.0 International"
 
 # Build settings
 markdown: Markright
+highlighter: rouge
 kramdown:
 coderay_line_numbers: nil
 encoding: utf-8
