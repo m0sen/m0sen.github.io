@@ -2,7 +2,7 @@ title: Mohsen Shayan
 email: m0sen91@yahoo.co.uk
 description: محسن شایان
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "m0sen.github.io" # the base hostname & protocol for your site
+url: "http://m0sen.github.io" # the base hostname & protocol for your site
 twitter_username: m0sen70
 github_username:  m0sen
 copyright: "Commons Attribution 4.0 International"
@@ -19,7 +19,5 @@ tag_page_layout: tag_page
 tag_page_dir: tag
 
 gems:
-  - jekyll-sitemap
   - jalalidate
-  - coderay
   - jekyll-paginate
