@@ -1,22 +1,26 @@
-title: Mohsen Shayan
-email: m0sen91@yahoo.co.uk
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+title: Your awesome title
+email: your-email@domain.com
 description: > # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
   line in _config.yml. It will appear in your document head meta (for
   Google search results) and in your feed.xml site description.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://m0sen.github.io" # the base hostname & protocol for your site
-twitter_username: m0sen70
-github_username:  m0sen
-copyright: "Commons Attribution 4.0 International"
+url: "http://yourdomain.com" # the base hostname & protocol for your site
+twitter_username: jekyllrb
+github_username:  jekyll
 
 # Build settings
-markdown: Markright
-highlighter: rouge
-kramdown:
-coderay_line_numbers: nil
+markdown: kramdown
+
 encoding: utf-8
-timezone: Asia/Tehran
 paginate: 5
 paginate_path: "/page:num/"
 tag_page_layout: tag_page
