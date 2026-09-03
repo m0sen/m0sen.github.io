@@ -747,13 +747,6 @@ pre code {
   position: relative;
 }
 
-.read-more-link::after,
-.read-more-btn::after {
-  content: '←';
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-block;
-}
-
 .read-more-link:hover::after,
 .read-more-btn:hover::after {
   transform: translateX(-5px);
