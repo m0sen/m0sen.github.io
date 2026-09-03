@@ -1,48 +1,45 @@
 /**
- * m0sen.ir - Blog Stylesheet
- * Version: 2.0.0
- * Architecture: Mobile-First, Dark Minimal Tech
+ * m0sen.ir Blog Stylesheet
+ * Version: 2.0.1
+ * Author: Mohsen Shayan (m0sen.ir)
+ * Dark Minimal Tech Theme
  */
 
 /* ==========================================================================
-   1. CSS Variables & Theme Tokens
+   1. CSS Variables & Design Tokens
    ========================================================================== */
 :root {
-  /* Color Palette */
   --bg-body: #1d1f20;
-  --bg-surface: #242628;
-  --bg-surface-elevated: #2c2f31;
-  --bg-input: #171819;
-
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-color-focus: #81e9aa;
-
-  --text-primary: #e6edf3;
-  --text-secondary: #9da7b3;
-  --text-muted: #6e7681;
-
-  --accent-orange: #fba056;
-  --accent-green: #198754;
-  --accent-green-light: #81e9aa;
-  --accent-green-dim: rgba(129, 233, 170, 0.12);
-
-  /* Typography */
-  --font-base: 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-
-  /* Dimensions & Spacing */
-  --site-max-width: 1120px;
-  --header-height: 64px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --bg-panel: #242628;
+  --bg-panel-hover: #2c2e30;
+  --bg-code: #161819;
   
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  --brand-green: #198754;
+  --brand-green-light: #81e9aa;
+  --brand-green-hover: #157347;
+  
+  --title-orange: #fba056;
+  --title-orange-hover: #ffb77d;
+  
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-focus: rgba(129, 233, 170, 0.4);
+  
+  --font-sans: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, Monaco, monospace;
+  
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  --transition: all 0.2s ease-in-out;
 }
 
 /* ==========================================================================
-   2. Base & Reset
+   2. Reset & Global Base
    ========================================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -57,261 +54,224 @@ html {
 
 body {
   background-color: var(--bg-body);
-  color: var(--text-primary);
-  font-family: var(--font-base);
-  font-size: 0.95rem;
+  color: var(--text-main);
+  font-family: var(--font-sans);
   line-height: 1.8;
   direction: rtl;
   text-align: right;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-  color: var(--accent-green-light);
+  color: var(--brand-green-light);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: var(--transition);
 }
 
 a:hover {
-  color: #a3f3c2;
+  color: #a3f7c4;
 }
 
 img {
   max-width: 100%;
   height: auto;
   border-radius: var(--radius-sm);
-  display: block;
-}
-
-input, button, textarea {
-  font-family: inherit;
-  font-size: inherit;
-  border: none;
-  outline: none;
-}
-
-/* Code & Preformatted */
-code, kbd, samp {
-  font-family: var(--font-mono);
-  font-size: 0.85em;
-  background-color: var(--bg-surface-elevated);
-  color: var(--accent-green-light);
-  padding: 0.15em 0.4em;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  direction: ltr;
-  display: inline-block;
-}
-
-pre {
-  background-color: #151718;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  overflow-x: auto;
-  margin: 1.25rem 0;
-  direction: ltr;
-  text-align: left;
-}
-
-pre code {
-  background: transparent;
-  padding: 0;
-  border: none;
-  color: var(--text-primary);
 }
 
 /* ==========================================================================
    3. Header & Navigation
    ========================================================================== */
 .site-header {
+  background-color: var(--bg-panel);
+  border-bottom: 1px solid var(--border-subtle);
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(29, 31, 32, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-color);
-  height: var(--header-height);
 }
 
 .header-inner {
-  max-width: var(--site-max-width);
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 1.25rem;
-  height: 100%;
+  padding: 0.85rem 1.25rem;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* Brand Logo */
 .brand-title a {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--text-primary);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
   letter-spacing: -0.5px;
+  font-family: var(--font-mono);
 }
 
 .brand-title a span {
-  color: var(--accent-orange);
+  color: var(--brand-green-light);
 }
 
 .brand-title a:hover {
-  color: var(--accent-green-light);
+  color: var(--brand-green-light);
 }
 
-/* Header Actions */
 .header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.nav-pages {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
+.nav-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .nav-pages a {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 0.9rem;
   font-weight: 500;
-  padding: 0.25rem 0.5rem;
+  padding: 0.35rem 0.6rem;
   border-radius: var(--radius-sm);
 }
 
 .nav-pages a:hover,
 .nav-pages a.active {
-  color: var(--text-primary);
-  background-color: var(--bg-surface-elevated);
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .main-site-btn {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--accent-green-light);
-  background: var(--accent-green-dim);
-  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background-color: var(--brand-green);
+  color: #ffffff !important;
+  padding: 0.4rem 0.85rem;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(129, 233, 170, 0.25);
-  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .main-site-btn:hover {
-  background: rgba(129, 233, 170, 0.2);
-  color: #fff;
+  background-color: var(--brand-green-hover);
+}
+
+/* Header section widget clean up */
+.header-nav-section .widget {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* ==========================================================================
-   4. Page Layout (Main + Sidebar)
+   4. Site Layout (Two Columns)
    ========================================================================== */
 .site-layout {
-  max-width: var(--site-max-width);
+  max-width: 1100px;
   width: 100%;
   margin: 2rem auto;
   padding: 0 1.25rem;
-  flex: 1;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 310px;
   gap: 2rem;
+  flex: 1;
 }
 
-@media (min-width: 900px) {
-  .site-layout {
-    grid-template-columns: minmax(0, 1fr) 300px;
-    gap: 2.5rem;
-  }
+/* Neutralize Blogger Main Blog Widget Container */
+.main-posts-section,
+.main-posts-section .widget,
+#Blog1 {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
 
 /* ==========================================================================
-   5. Posts & Article Content
+   5. Posts & Articles (Main Column)
    ========================================================================== */
-.main-content {
-  min-width: 0;
-}
-
 .post-entry {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  margin-bottom: 1.75rem;
-  transition: transform var(--transition-normal), border-color var(--transition-normal);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
 }
 
 .post-entry:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .post-title {
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-size: 1.45rem;
+  font-weight: 700;
   line-height: 1.5;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
 }
 
 .post-title a {
-  color: var(--accent-orange);
+  color: var(--title-orange);
 }
 
 .post-title a:hover {
-  color: #ffb87d;
+  color: var(--title-orange-hover);
 }
 
-/* Post Meta */
 .post-meta {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
   font-size: 0.82rem;
   color: var(--text-muted);
 }
 
 .badge-date {
-  background-color: var(--bg-surface-elevated);
-  color: var(--text-secondary);
-  font-family: var(--font-mono);
-  padding: 0.15rem 0.5rem;
+  background-color: rgba(25, 135, 84, 0.15);
+  color: var(--brand-green-light);
+  padding: 0.2rem 0.6rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .post-author {
-  color: var(--text-secondary);
+  color: var(--text-dim);
 }
 
-/* Post Content Body */
+/* Content Typography */
 .post-content {
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  word-break: break-word;
+  color: var(--text-main);
+  font-size: 0.98rem;
+  line-height: 1.9;
 }
 
 .post-content p {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-.post-content h2, .post-content h3, .post-content h4 {
-  color: var(--text-primary);
-  margin: 1.5rem 0 0.75rem;
+.post-content h2,
+.post-content h3,
+.post-content h4 {
+  color: #ffffff;
+  margin: 1.75rem 0 0.85rem;
   font-weight: 700;
 }
 
-.post-content h2 { font-size: 1.25rem; }
-.post-content h3 { font-size: 1.1rem; }
-
-.post-content ul, .post-content ol {
+.post-content ul, 
+.post-content ol {
+  margin-bottom: 1.25rem;
   padding-right: 1.5rem;
-  margin-bottom: 1rem;
 }
 
 .post-content li {
@@ -319,36 +279,83 @@ pre code {
 }
 
 .post-content blockquote {
-  border-right: 3px solid var(--accent-green);
-  background: var(--bg-surface-elevated);
-  padding: 0.75rem 1rem;
-  margin: 1rem 0;
+  border-right: 3px solid var(--brand-green-light);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.75rem 1.25rem;
+  margin: 1.25rem 0;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  color: var(--text-secondary);
-  font-style: italic;
+  color: var(--text-muted);
 }
 
-/* Read More Link (Snippets) */
-.read-more-link {
+/* Code Blocks & Inline Code */
+code {
+  font-family: var(--font-mono);
+  background-color: var(--bg-code);
+  color: var(--brand-green-light);
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88em;
+  direction: ltr;
+  display: inline-block;
+}
+
+pre {
+  background-color: var(--bg-code);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  direction-color: transparent;
+  padding: 0;
+  color: #f8f8f2;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Copy Code Button */
+.code-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.code-copy-btn:hover {
+  background: var(--brand-green);
+  color: #ffffff;
+}
+
+/* Snippet Read More Button */
+.read-more-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  color: var(--accent-green-light);
-  font-size: 0.88rem;
+  gap: 0.4rem;
+  margin-top: 1rem;
   font-weight: 600;
-  margin-top: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--brand-green-light);
 }
 
-.read-more-link:hover {
-  text-decoration: underline;
+.read-more-btn:hover {
+  color: #ffffff;
+  transform: translateX(-3px);
 }
 
 /* ==========================================================================
-   6. Pagination
+   6. Pagination & Item Pager
    ========================================================================== */
 .blog-pagination {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 }
 
 .pager-links,
@@ -361,27 +368,24 @@ pre code {
 
 .blog-pager-older-link,
 .blog-pager-newer-link,
-.nav-prev,
-.nav-next {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.6rem 1.1rem;
-  background-color: var(--bg-surface);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+.nav-next,
+.nav-prev {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  padding: 0.6rem 1.2rem;
   border-radius: var(--radius-md);
   font-size: 0.88rem;
-  font-weight: 500;
-  transition: all var(--transition-fast);
+  font-weight: 600;
 }
 
 .blog-pager-older-link:hover,
 .blog-pager-newer-link:hover,
-.nav-prev:hover,
-.nav-next:hover {
-  background-color: var(--bg-surface-elevated);
-  color: var(--text-primary);
-  border-color: var(--accent-green-light);
+.nav-next:hover,
+.nav-prev:hover {
+  background-color: var(--bg-panel-hover);
+  border-color: var(--brand-green-light);
+  color: #ffffff;
 }
 
 /* ==========================================================================
@@ -390,75 +394,48 @@ pre code {
 .side-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
-.widget {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
+/* Card container for all sidebar widgets */
+.side-column .widget {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Auto-hide completely empty widgets */
+.widget:empty,
+.widget-content:empty {
+  display: none !important;
 }
 
 .widget-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .widget-title svg {
-  stroke: var(--accent-green-light);
+  color: var(--brand-green-light);
+  stroke-width: 2.2;
 }
 
-/* Search Form */
-.search-form {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.search-input {
-  flex: 1;
-  background-color: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.88rem;
-  transition: border-color var(--transition-fast);
-}
-
-.search-input:focus {
-  border-color: var(--border-color-focus);
-}
-
-.search-submit {
-  background-color: var(--accent-green);
-  color: #fff;
-  padding: 0.5rem 0.9rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 0.88rem;
-  transition: background-color var(--transition-fast);
-}
-
-.search-submit:hover {
-  background-color: #1e9d63;
-}
-
-/* Lists (Archive & Pages) */
+/* Widget Lists (Pages, Archive, etc.) */
 .widget-list {
   list-style: none;
 }
 
 .widget-list li {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.55rem;
 }
 
 .widget-list li:last-child {
@@ -466,20 +443,20 @@ pre code {
 }
 
 .widget-list a {
-  display: block;
-  color: var(--text-secondary);
-  font-size: 0.88rem;
-  padding: 0.35rem 0.5rem;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0;
 }
 
 .widget-list a:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-surface-elevated);
+  color: #ffffff;
+  padding-right: 4px;
 }
 
-/* Label Cloud */
+/* Labels Cloud */
 .labels-cloud {
   display: flex;
   flex-wrap: wrap;
@@ -487,86 +464,131 @@ pre code {
 }
 
 .labels-cloud a {
-  display: inline-block;
-  background-color: var(--bg-surface-elevated);
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  padding: 0.25rem 0.6rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 0.25rem 0.65rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  transition: all var(--transition-fast);
 }
 
 .labels-cloud a:hover {
-  background-color: var(--accent-green-dim);
-  color: var(--accent-green-light);
-  border-color: rgba(129, 233, 170, 0.3);
+  background-color: var(--brand-green);
+  border-color: var(--brand-green);
+  color: #ffffff;
 }
 
-/* Feed Box */
+/* Native Search Form */
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  background-color: var(--bg-body);
+  border: 1px solid var(--border-subtle);
+  color: #ffffff;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  border-color: var(--brand-green-light);
+}
+
+.search-submit {
+  background-color: var(--brand-green);
+  border: none;
+  color: #ffffff;
+  padding: 0.55rem 0.95rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-submit:hover {
+  background-color: var(--brand-green-hover);
+}
+
+/* RSS Feed Box */
 .feed-box a {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--bg-surface-elevated);
-  border: 1px dashed var(--border-color);
-  color: var(--text-secondary);
-  padding: 0.75rem;
-  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 0.65rem;
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .feed-box a:hover {
-  border-color: var(--accent-orange);
-  color: var(--accent-orange);
+  background-color: rgba(25, 135, 84, 0.2);
+  border-color: var(--brand-green-light);
+  color: var(--brand-green-light);
 }
 
 /* ==========================================================================
    8. Footer
    ========================================================================== */
 .site-footer {
+  background-color: var(--bg-panel);
+  border-top: 1px solid var(--border-subtle);
   margin-top: auto;
-  border-top: 1px solid var(--border-color);
-  background-color: var(--bg-surface);
   padding: 1.5rem 1.25rem;
   text-align: center;
-  color: var(--text-muted);
-  font-size: 0.82rem;
+}
+
+.site-footer p {
+  color: var(--text-dim);
+  font-size: 0.85rem;
   font-family: var(--font-mono);
 }
 
+.footer-section .widget {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 /* ==========================================================================
-   9. Mobile Responsiveness Adjustments
+   9. Responsive Design (Mobile First Media Queries)
    ========================================================================== */
-@media (max-width: 640px) {
+@media (max-width: 860px) {
+  .site-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin: 1.25rem auto;
+  }
+  
   .header-inner {
-    padding: 0 1rem;
-  }
-
-  .nav-pages {
-    display: none; /* Can be handled with a dropdown or kept in sidebar */
-  }
-
-  .post-entry {
-    padding: 1.15rem;
-  }
-
-  .post-title {
-    font-size: 1.15rem;
-  }
-
-  .pager-links, .item-pager-links {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .blog-pager-older-link,
-  .blog-pager-newer-link,
-  .nav-prev,
-  .nav-next {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
     text-align: center;
-    justify-content: center;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .post-entry {
+    padding: 1.25rem;
+  }
+  
+  .post-title {
+    font-size: 1.25rem;
   }
 }
