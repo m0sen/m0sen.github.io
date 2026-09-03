@@ -1,6 +1,6 @@
 /**
  * m0sen.ir - Blog Engine Script
- * Version: 2.0.0
+ * Version: 2.1.0 (با انیمیشن‌های اسکرول و نرم‌سازی کامل)
  * Stack: Pure Vanilla ES6+
  */
 
@@ -9,14 +9,113 @@
 
   // --- Configuration ---
   const CONFIG = {
-    snippetLength: 190, // تعداد کاراکتر برای خلاصه‌سازی در صفحه اصلی
+    snippetLength: 190,
     readMoreText: 'ادامه مطلب ←',
     copySuccessText: 'کپی شد!',
-    copyDefaultText: 'کپی کد'
+    copyDefaultText: 'کپی کد',
+    
+    // ═══ تنظیمات انیمیشن اسکرول ═══
+    scroll: {
+      rootMargin: '0px 0px -50px 0px',
+      threshold: 0.15,
+      headerScrollThreshold: 80,
+      headerHideThreshold: 100
+    }
   };
 
+  // ================================================================
+  //  1. انیمیشن‌های اسکرول (Scroll Animations)
+  // ================================================================
+  
   /**
-   * 1. خلاصه‌سازی هوشمند محتوای مطالب در صفحات ایندکس/آرشیو
+   * فعال‌سازی انیمیشن‌های اسکرول با Intersection Observer
+   * المان‌های دارای کلاس‌های scroll-* را هنگام ورود به دید، فعال می‌کند
+   */
+  function initScrollAnimations() {
+    // انتخاب تمام المان‌های دارای انیمیشن اسکرول
+    const animatedElements = document.querySelectorAll(
+      '.scroll-animate, .scroll-up, .scroll-down, .scroll-left, ' +
+      '.scroll-right, .scroll-zoom, .scroll-rotate, ' +
+      '.post-entry, .side-column .widget, .site-footer'
+    );
+
+    // اگر المانی وجود نداشت، خروج
+    if (animatedElements.length === 0) return;
+
+    // تنظیمات Observer
+    const observerOptions = {
+      root: null,
+      rootMargin: CONFIG.scroll.rootMargin,
+      threshold: CONFIG.scroll.threshold
+    };
+
+    // ایجاد Observer
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          
+          // (اختیاری) برای المان‌هایی که فقط یک بار انیمیشن می‌خواهند
+          // observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // شروع مشاهده هر المان
+    animatedElements.forEach(function(element) {
+      observer.observe(element);
+    });
+
+    // ═══ مدیریت هدر هنگام اسکرول ═══
+    initHeaderScrollEffect();
+
+    console.log(`✅ ${animatedElements.length} المان برای انیمیشن اسکرول ثبت شدند.`);
+  }
+
+  /**
+   * افکت هدر: تغییر ظاهر و مخفی/نمایش هنگام اسکرول
+   */
+  function initHeaderScrollEffect() {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          const currentScrollY = window.scrollY;
+          
+          // اضافه/حذف کلاس scrolled
+          if (currentScrollY > CONFIG.scroll.headerScrollThreshold) {
+            header.classList.add('scrolled');
+          } else {
+            header.classList.remove('scrolled');
+          }
+          
+          // مخفی کردن هدر هنگام اسکرول به پایین
+          if (currentScrollY > lastScrollY && 
+              currentScrollY > CONFIG.scroll.headerHideThreshold) {
+            header.style.transform = 'translateY(-100%)';
+          } else {
+            header.style.transform = 'translateY(0)';
+          }
+          
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  }
+
+  // ================================================================
+  //  2. خلاصه‌سازی هوشمند محتوا (Snippets)
+  // ================================================================
+
+  /**
+   * خلاصه‌سازی هوشمند محتوای مطالب در صفحات ایندکس/آرشیو
    */
   function initPostSnippets() {
     const snippets = document.querySelectorAll('.snippet-content[data-summary="true"]');
@@ -37,20 +136,27 @@
     });
   }
 
+  // ================================================================
+  //  3. دکمه کپی برای بلوک‌های کد
+  // ================================================================
+
   /**
-   * 2. افزودن دکمه کپی به بلوک‌های کد (Code Highlighting / Blocks)
+   * افزودن دکمه کپی به بلوک‌های کد (Code Highlighting / Blocks)
    */
   function initCodeBlocks() {
     const codeBlocks = document.querySelectorAll('.post-content pre');
 
     codeBlocks.forEach((pre) => {
-      // ایجاد Wrapper در صورت نیاز
+      // جلوگیری از دوباره‌کاری
+      if (pre.querySelector('.copy-code-btn')) return;
+
       pre.style.position = 'relative';
 
       const copyBtn = document.createElement('button');
       copyBtn.type = 'button';
       copyBtn.className = 'copy-code-btn';
       copyBtn.textContent = CONFIG.copyDefaultText;
+      copyBtn.setAttribute('aria-label', 'کپی کردن کد');
       
       // استایل دکمه کپی با دیزاین سیستم دارک
       Object.assign(copyBtn.style, {
@@ -65,38 +171,64 @@
         borderRadius: '4px',
         cursor: 'pointer',
         border: '1px solid rgba(255, 255, 255, 0.1)',
-        transition: 'all 0.2s ease'
+        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)'
       });
 
       copyBtn.addEventListener('mouseenter', () => {
         copyBtn.style.color = '#81e9aa';
         copyBtn.style.borderColor = '#81e9aa';
+        copyBtn.style.transform = 'scale(1.05)';
+        copyBtn.style.background = 'rgba(129, 233, 170, 0.12)';
       });
 
       copyBtn.addEventListener('mouseleave', () => {
         if (copyBtn.textContent !== CONFIG.copySuccessText) {
           copyBtn.style.color = '#9da7b3';
           copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          copyBtn.style.transform = 'scale(1)';
+          copyBtn.style.background = 'rgba(255, 255, 255, 0.08)';
         }
       });
 
-      copyBtn.addEventListener('click', async () => {
+      copyBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        
         const codeElement = pre.querySelector('code') || pre;
         const codeText = codeElement.innerText;
 
         try {
           await navigator.clipboard.writeText(codeText);
+          
+          // نمایش موفقیت
+          const originalText = copyBtn.textContent;
           copyBtn.textContent = CONFIG.copySuccessText;
           copyBtn.style.color = '#81e9aa';
           copyBtn.style.borderColor = '#81e9aa';
+          copyBtn.style.background = 'rgba(129, 233, 170, 0.2)';
+          copyBtn.style.transform = 'scale(0.95)';
 
           setTimeout(() => {
             copyBtn.textContent = CONFIG.copyDefaultText;
             copyBtn.style.color = '#9da7b3';
             copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            copyBtn.style.background = 'rgba(255, 255, 255, 0.08)';
+            copyBtn.style.transform = 'scale(1)';
           }, 2000);
         } catch (err) {
-          console.error('Failed to copy code: ', err);
+          console.error('خطا در کپی کد:', err);
+          
+          // بازخورد خطا
+          copyBtn.textContent = 'خطا!';
+          copyBtn.style.color = '#ef4444';
+          copyBtn.style.borderColor = '#ef4444';
+          
+          setTimeout(() => {
+            copyBtn.textContent = CONFIG.copyDefaultText;
+            copyBtn.style.color = '#9da7b3';
+            copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          }, 2000);
         }
       });
 
@@ -104,8 +236,12 @@
     });
   }
 
+  // ================================================================
+  //  4. لینک‌های خارجی (External Links)
+  // ================================================================
+
   /**
-   * 3. باز کردن لینک‌های خارجی در تب جدید با تمهیدات امنیتی
+   * باز کردن لینک‌های خارجی در تب جدید با تمهیدات امنیتی
    */
   function initExternalLinks() {
     const postLinks = document.querySelectorAll('.post-content a');
@@ -119,13 +255,17 @@
           link.setAttribute('rel', 'noopener noreferrer');
         }
       } catch (e) {
-        // Not a standard absolute URL, ignore
+        // آدرس استاندارد نیست، نادیده گرفته شود
       }
     });
   }
 
+  // ================================================================
+  //  5. فرمت‌بندی تاریخ‌ها (Date Formatting)
+  // ================================================================
+
   /**
-   * 4. فرمت‌بندی تاریخ‌ها به میلادی تمیز (YYYY/MM/DD)
+   * فرمت‌بندی تاریخ‌ها به میلادی تمیز (YYYY/MM/DD)
    */
   function normalizeDates() {
     const dateElements = document.querySelectorAll('time.post-date');
@@ -142,26 +282,138 @@
             el.textContent = `${year}/${month}/${day}`;
           }
         } catch (e) {
-          // Keep original content if parsing fails
+          // در صورت خطا، محتوای اصلی حفظ شود
         }
       }
     });
   }
 
+  // ================================================================
+  //  6. انیمیشن‌های اضافی (Extra Animations)
+  // ================================================================
+
   /**
-   * اجرای ماژول‌ها پس از آماده‌سازی DOM
+   * افزودن انیمیشن‌های ورود پله‌ای به المان‌ها
+   * (برای المان‌هایی که کلاس delay-* دارند)
+   */
+  function initStaggeredAnimations() {
+    // این تابع در حال حاضر توسط CSS و کلاس‌های delay مدیریت می‌شود
+    // اما برای اطمینان از اجرای مجدد انیمیشن‌ها در صورت لزوم
+    
+    const staggeredElements = document.querySelectorAll(
+      '.post-entry, .side-column .widget'
+    );
+    
+    // اطمینان از اینکه المان‌ها state اولیه رو دارند
+    staggeredElements.forEach((el, index) => {
+      if (!el.classList.contains('visible')) {
+        // اگر المان قبلاً visible نبود، یک تاخیر پویا اضافه کن
+        const delay = Math.min((index * 0.07), 0.6);
+        el.style.transitionDelay = `${delay}s`;
+      }
+    });
+  }
+
+  // ================================================================
+  //  7. بهینه‌سازی عملکرد (Performance)
+  // ================================================================
+
+  /**
+   * تشخیص مرورگر و اعمال polyfill در صورت نیاز
+   * (برای پشتیبانی از Intersection Observer در مرورگرهای قدیمی)
+   */
+  function checkBrowserSupport() {
+    if (!('IntersectionObserver' in window)) {
+      console.warn('⚠️ مرورگر شما از Intersection Observer پشتیبانی نمی‌کند.');
+      console.warn('⚠️ انیمیشن‌های اسکرول غیرفعال می‌شوند.');
+      
+      // به عنوان fallback، همه المان‌ها را visible کنید
+      document.querySelectorAll('.scroll-animate, .scroll-up, .scroll-down, ' +
+        '.scroll-left, .scroll-right, .scroll-zoom, .scroll-rotate, ' +
+        '.post-entry, .side-column .widget, .site-footer')
+        .forEach(el => el.classList.add('visible'));
+      
+      return false;
+    }
+    return true;
+  }
+
+  // ================================================================
+  //  8. اجرای اصلی (Initialization)
+  // ================================================================
+
+  /**
+   * اجرای همه ماژول‌ها پس از آماده‌سازی DOM
    */
   function init() {
+    // بررسی پشتیبانی مرورگر
+    const supportsObserver = checkBrowserSupport();
+    
+    // اجرای ماژول‌ها
     initPostSnippets();
     initCodeBlocks();
     initExternalLinks();
     normalizeDates();
+    initStaggeredAnimations();
+    
+    // انیمیشن‌های اسکرول (در صورت پشتیبانی)
+    if (supportsObserver) {
+      // تاخیر کوچک برای اطمینان از رندر شدن DOM
+      setTimeout(initScrollAnimations, 100);
+    }
+    
+    console.log('🚀 m0sen.ir Blog Engine با موفقیت بارگذاری شد!');
+    console.log(`📅 نسخه: 2.1.0 - ${new Date().toLocaleDateString('fa-IR')}`);
   }
 
+  // ================================================================
+  //  9. مدیریت رویدادها (Event Handlers)
+  // ================================================================
+
+  // اجرا پس از آماده‌سازی DOM
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
+    // اگر DOM قبلاً آماده است، مستقیماً اجرا کن
     init();
+  }
+
+  // ═══ بارگذاری مجدد انیمیشن‌ها در صورت تغییر محتوا (مثلاً در SPA) ═══
+  // این قابلیت برای سایت‌های داینامیک مفید است
+  if (window.MutationObserver) {
+    const contentObserver = new MutationObserver(function(mutations) {
+      let shouldReinit = false;
+      
+      mutations.forEach(function(mutation) {
+        if (mutation.addedNodes.length > 0) {
+          // بررسی وجود المان‌های جدید با کلاس‌های انیمیشن
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) { // عنصر DOM
+              if (node.matches && (
+                node.matches('.post-entry, .side-column .widget, .scroll-animate, .scroll-up') ||
+                node.querySelector('.post-entry, .side-column .widget, .scroll-animate, .scroll-up')
+              )) {
+                shouldReinit = true;
+              }
+            }
+          });
+        }
+      });
+      
+      if (shouldReinit) {
+        console.log('🔄 محتوای جدید شناسایی شد، راه‌اندازی مجدد انیمیشن‌ها...');
+        // راه‌اندازی مجدد انیمیشن‌های اسکرول
+        if ('IntersectionObserver' in window) {
+          setTimeout(initScrollAnimations, 200);
+        }
+      }
+    });
+    
+    // شروع مشاهده تغییرات در بدنه
+    contentObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   }
 
 })();
