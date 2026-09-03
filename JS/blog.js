@@ -1,27 +1,17 @@
 /**
  * m0sen.ir - Blog Engine Script
- * Version: 2.2.0 (با Thumbnail خودکار)
+ * Version: 2.4.0 (با تاریخ شمسی)
  * Stack: Pure Vanilla ES6+
  */
 
 (function () {
   'use strict';
 
-  // --- Configuration ---
   const CONFIG = {
     snippetLength: 190,
     readMoreText: 'ادامه مطلب ←',
     copySuccessText: 'کپی شد!',
     copyDefaultText: 'کپی کد',
-    
-    // ═══ تنظیمات Thumbnail ═══
-    thumbnail: {
-      enabled: true,
-      placeholderEmoji: '📄',
-      badgeDateFormat: 'YYYY/MM/DD'
-    },
-    
-    // ═══ تنظیمات انیمیشن اسکرول ═══
     scroll: {
       rootMargin: '0px 0px -50px 0px',
       threshold: 0.15,
@@ -31,81 +21,134 @@
   };
 
   // ================================================================
-  //  1. Thumbnail خودکار (استخراج اولین تصویر از پست)
+  //  0. تبدیل تاریخ میلادی به شمسی
   // ================================================================
 
   /**
-   * استخراج خودکار اولین تصویر از محتوای پست
-   * و اضافه کردن آن به‌عنوان Thumbnail
+   * تبدیل تاریخ میلادی به شمسی با فرمت دلخواه
+   * @param {Date} date - تاریخ میلادی
+   * @param {string} format - 'full' = ۱۵ مرداد ۱۴۰۵ | 'short' = ۱۴۰۵/۰۵/۱۵
    */
+  function toPersianDate(date, format) {
+    if (!date || isNaN(date.getTime())) return '';
+    
+    // الگوریتم تبدیل میلادی به شمسی
+    function gregorianToJalali(gy, gm, gd) {
+      var g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+      var jy, jm, jd;
+      if (gy > 1600) {
+        jy = 979;
+        gy -= 1600;
+      } else {
+        jy = 0;
+        gy -= 621;
+      }
+      var gy2 = (gm > 2) ? (gy + 1) : gy;
+      var days = (gy * 365) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+      jy += 33 * Math.floor(days / 12053);
+      days %= 12053;
+      jy += 4 * Math.floor(days / 1461);
+      days %= 1461;
+      if (days > 365) {
+        jy += Math.floor((days - 1) / 366);
+        days = (days - 1) % 366;
+      }
+      jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+      jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+      return [jy, jm, jd];
+    }
+
+    // نام ماه‌های شمسی
+    const persianMonths = [
+      'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+      'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+    ];
+
+    const gy = date.getFullYear();
+    const gm = date.getMonth() + 1;
+    const gd = date.getDate();
+
+    const [jy, jm, jd] = gregorianToJalali(gy, gm, gd);
+
+    if (format === 'full') {
+      return `${jd} ${persianMonths[jm - 1]} ${jy}`;
+    } else if (format === 'short') {
+      return `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`;
+    } else if (format === 'month-year') {
+      return `${persianMonths[jm - 1]} ${jy}`;
+    } else {
+      return `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`;
+    }
+  }
+
+  // ================================================================
+  //  1. Thumbnail با استفاده از Featured Image
+  // ================================================================
+
   function initPostThumbnails() {
-    // فقط در صفحه اصلی و آرشیو (چند پست) اجرا بشه
     const posts = document.querySelectorAll('.post-entry');
     
-    posts.forEach((post, index) => {
-      // اگر پست قبلاً thumbnail داشت یا در صفحه تک پست هستیم، نادیده بگیر
+    posts.forEach((post) => {
       if (post.querySelector('.post-thumbnail')) return;
       if (post.closest('.single-post')) return;
       
-      // پیدا کردن محتوای پست
       const content = post.querySelector('.post-content');
       if (!content) return;
       
-      // پیدا کردن اولین تصویر داخل محتوا
-      const firstImage = content.querySelector('img');
+      const featuredImage = content.querySelector('img.featured, img.thumbnail, img[data-featured="true"]');
+      const firstImage = featuredImage || content.querySelector('img:not(.no-thumbnail)');
       
-      // ایجاد container برای thumbnail
       const thumbnailContainer = document.createElement('div');
       thumbnailContainer.className = 'post-thumbnail';
       
-      // دریافت تاریخ پست برای برچسب
       const dateElement = post.querySelector('.post-date');
       let dateText = '';
       if (dateElement) {
-        dateText = dateElement.textContent.trim();
+        const isoDate = dateElement.getAttribute('datetime');
+        if (isoDate) {
+          try {
+            const d = new Date(isoDate);
+            if (!isNaN(d.getTime())) {
+              dateText = toPersianDate(d, 'short');
+            }
+          } catch (e) {}
+        }
+        if (!dateText) {
+          dateText = dateElement.textContent.trim();
+        }
       }
       
       if (firstImage) {
-        // کپی کردن تصویر
         const imgClone = firstImage.cloneNode(true);
         imgClone.removeAttribute('width');
         imgClone.removeAttribute('height');
         imgClone.loading = 'lazy';
         imgClone.alt = imgClone.alt || 'تصویر شاخص مطلب';
         thumbnailContainer.appendChild(imgClone);
-        
-        // اضافه کردن کلاس has-thumbnail به پست
         post.classList.add('has-thumbnail');
         
-        // اضافه کردن برچسب تاریخ روی تصویر (اختیاری)
         if (dateText) {
           const badge = document.createElement('span');
           badge.className = 'thumbnail-badge';
           badge.textContent = dateText;
           thumbnailContainer.appendChild(badge);
         }
-        
       } else {
-        // Placeholder برای پست‌های بدون تصویر
         thumbnailContainer.innerHTML = `
           <div class="thumbnail-placeholder">
-            <span>${CONFIG.thumbnail.placeholderEmoji}</span>
+            <span>📄</span>
           </div>
         `;
       }
       
-      // قرار دادن thumbnail در ابتدای پست
       post.insertBefore(thumbnailContainer, post.firstChild);
       
-      // اضافه کردن کلاس wrapper برای محتوای پست
       const contentWrapper = document.createElement('div');
       contentWrapper.className = 'post-content-wrapper';
       
-      // انتقال محتوای پست به wrapper
       const children = Array.from(post.children);
       const thumbnailIndex = children.indexOf(thumbnailContainer);
       
-      // همه المان‌های بعد از thumbnail رو به wrapper منتقل کن
       children.forEach((child, i) => {
         if (i > thumbnailIndex) {
           contentWrapper.appendChild(child);
@@ -117,12 +160,9 @@
   }
 
   // ================================================================
-  //  2. انیمیشن‌های اسکرول (Scroll Animations)
+  //  2. انیمیشن‌های اسکرول
   // ================================================================
-  
-  /**
-   * فعال‌سازی انیمیشن‌های اسکرول با Intersection Observer
-   */
+
   function initScrollAnimations() {
     const animatedElements = document.querySelectorAll(
       '.scroll-animate, .scroll-up, .scroll-down, .scroll-left, ' +
@@ -151,13 +191,8 @@
     });
 
     initHeaderScrollEffect();
-
-    console.log(`✅ ${animatedElements.length} المان برای انیمیشن اسکرول ثبت شدند.`);
   }
 
-  /**
-   * افکت هدر: تغییر ظاهر و مخفی/نمایش هنگام اسکرول
-   */
   function initHeaderScrollEffect() {
     const header = document.querySelector('.site-header');
     if (!header) return;
@@ -192,7 +227,7 @@
   }
 
   // ================================================================
-  //  3. خلاصه‌سازی هوشمند محتوا (Snippets)
+  //  3. خلاصه‌سازی محتوا
   // ================================================================
 
   function initPostSnippets() {
@@ -215,7 +250,7 @@
   }
 
   // ================================================================
-  //  4. دکمه کپی برای بلوک‌های کد
+  //  4. کپی کد
   // ================================================================
 
   function initCodeBlocks() {
@@ -289,7 +324,6 @@
           }, 2000);
         } catch (err) {
           console.error('خطا در کپی کد:', err);
-          
           copyBtn.textContent = 'خطا!';
           copyBtn.style.color = '#ef4444';
           copyBtn.style.borderColor = '#ef4444';
@@ -307,7 +341,7 @@
   }
 
   // ================================================================
-  //  5. لینک‌های خارجی (External Links)
+  //  5. لینک‌های خارجی
   // ================================================================
 
   function initExternalLinks() {
@@ -321,14 +355,12 @@
           link.setAttribute('target', '_blank');
           link.setAttribute('rel', 'noopener noreferrer');
         }
-      } catch (e) {
-        // آدرس استاندارد نیست، نادیده گرفته شود
-      }
+      } catch (e) {}
     });
   }
 
   // ================================================================
-  //  6. فرمت‌بندی تاریخ‌ها (Date Formatting)
+  //  6. تبدیل تاریخ‌ها به شمسی
   // ================================================================
 
   function normalizeDates() {
@@ -340,20 +372,43 @@
         try {
           const d = new Date(isoDate);
           if (!isNaN(d.getTime())) {
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            el.textContent = `${year}/${month}/${day}`;
+            // فرمت کامل شمسی: ۱۵ مرداد ۱۴۰۵
+            const persianDate = toPersianDate(d, 'full');
+            el.textContent = persianDate;
+            
+            // به‌روزرسانی datetime با تاریخ شمسی (اختیاری)
+            // el.setAttribute('datetime', persianDate);
           }
-        } catch (e) {
-          // در صورت خطا، محتوای اصلی حفظ شود
+        } catch (e) {}
+      }
+    });
+
+    // ===== تبدیل تاریخ‌های بایگانی =====
+    const archiveLinks = document.querySelectorAll('#archivesList a, .widget-list a');
+    archiveLinks.forEach((link) => {
+      const text = link.textContent.trim();
+      // تشخیص تاریخ‌های میلادی مثل "September 2026" یا "2026/09"
+      const match = text.match(/(\w+)\s+(\d{4})/); // September 2026
+      if (match) {
+        const monthName = match[1];
+        const year = parseInt(match[2]);
+        const monthMap = {
+          'January': 0, 'February': 1, 'March': 2, 'April': 3,
+          'May': 4, 'June': 5, 'July': 6, 'August': 7,
+          'September': 8, 'October': 9, 'November': 10, 'December': 11
+        };
+        const month = monthMap[monthName];
+        if (month !== undefined && year) {
+          const date = new Date(year, month, 1);
+          const persianDate = toPersianDate(date, 'month-year');
+          link.textContent = persianDate;
         }
       }
     });
   }
 
   // ================================================================
-  //  7. انیمیشن‌های اضافی (Extra Animations)
+  //  7. بهینه‌سازی تاخیر پله‌ای
   // ================================================================
 
   function initStaggeredAnimations() {
@@ -370,55 +425,37 @@
   }
 
   // ================================================================
-  //  8. بهینه‌سازی عملکرد (Performance)
-  // ================================================================
-
-  function checkBrowserSupport() {
-    if (!('IntersectionObserver' in window)) {
-      console.warn('⚠️ مرورگر شما از Intersection Observer پشتیبانی نمی‌کند.');
-      console.warn('⚠️ انیمیشن‌های اسکرول غیرفعال می‌شوند.');
-      
-      document.querySelectorAll('.scroll-animate, .scroll-up, .scroll-down, ' +
-        '.scroll-left, .scroll-right, .scroll-zoom, .scroll-rotate, ' +
-        '.post-entry, .side-column .widget, .site-footer')
-        .forEach(el => el.classList.add('visible'));
-      
-      return false;
-    }
-    return true;
-  }
-
-  // ================================================================
-  //  9. اجرای اصلی (Initialization)
+  //  8. اجرای اصلی
   // ================================================================
 
   function init() {
-    // ═══ مرحله 1: Thumbnail (قبل از همه) ═══
-    if (CONFIG.thumbnail.enabled) {
-      initPostThumbnails();
-    }
-    
-    // ═══ مرحله 2: بررسی پشتیبانی مرورگر ═══
-    const supportsObserver = checkBrowserSupport();
-    
-    // ═══ مرحله 3: اجرای ماژول‌ها ═══
-    initPostSnippets();
-    initCodeBlocks();
-    initExternalLinks();
+    // مرحله 1: تبدیل تاریخ‌ها به شمسی (قبل از همه)
     normalizeDates();
+    
+    // مرحله 2: Thumbnail
+    initPostThumbnails();
+    
+    // مرحله 3: خلاصه‌سازی
+    initPostSnippets();
+    
+    // مرحله 4: کپی کد
+    initCodeBlocks();
+    
+    // مرحله 5: لینک‌های خارجی
+    initExternalLinks();
+    
+    // مرحله 6: تاخیر پله‌ای
     initStaggeredAnimations();
     
-    // ═══ مرحله 4: انیمیشن‌های اسکرول ═══
-    if (supportsObserver) {
-      setTimeout(initScrollAnimations, 100);
-    }
+    // مرحله 7: انیمیشن‌های اسکرول
+    setTimeout(initScrollAnimations, 100);
     
     console.log('🚀 m0sen.ir Blog Engine با موفقیت بارگذاری شد!');
-    console.log(`📅 نسخه: 2.2.0 - ${new Date().toLocaleDateString('fa-IR')}`);
+    console.log('📅 تاریخ امروز:', toPersianDate(new Date(), 'full'));
   }
 
   // ================================================================
-  //  10. مدیریت رویدادها (Event Handlers)
+  //  9. مدیریت رویدادها
   // ================================================================
 
   if (document.readyState === 'loading') {
@@ -427,35 +464,29 @@
     init();
   }
 
-  // ═══ بارگذاری مجدد انیمیشن‌ها در صورت تغییر محتوا ═══
+  // بازسازی تاریخ‌ها در صورت تغییر محتوا (مثلاً در SPA)
   if (window.MutationObserver) {
-    const contentObserver = new MutationObserver(function(mutations) {
-      let shouldReinit = false;
-      
-      mutations.forEach(function(mutation) {
-        if (mutation.addedNodes.length > 0) {
-          mutation.addedNodes.forEach(function(node) {
-            if (node.nodeType === 1) {
-              if (node.matches && (
-                node.matches('.post-entry, .side-column .widget, .scroll-animate, .scroll-up') ||
-                node.querySelector('.post-entry, .side-column .widget, .scroll-animate, .scroll-up')
-              )) {
-                shouldReinit = true;
+    const dateObserver = new MutationObserver(function() {
+      // بررسی وجود تاریخ‌های جدید
+      const dates = document.querySelectorAll('time.post-date:not([data-converted])');
+      if (dates.length > 0) {
+        dates.forEach(el => {
+          const isoDate = el.getAttribute('datetime');
+          if (isoDate) {
+            try {
+              const d = new Date(isoDate);
+              if (!isNaN(d.getTime())) {
+                const persianDate = toPersianDate(d, 'full');
+                el.textContent = persianDate;
+                el.setAttribute('data-converted', 'true');
               }
-            }
-          });
-        }
-      });
-      
-      if (shouldReinit) {
-        console.log('🔄 محتوای جدید شناسایی شد، راه‌اندازی مجدد انیمیشن‌ها...');
-        if ('IntersectionObserver' in window) {
-          setTimeout(initScrollAnimations, 200);
-        }
+            } catch (e) {}
+          }
+        });
       }
     });
     
-    contentObserver.observe(document.body, {
+    dateObserver.observe(document.body, {
       childList: true,
       subtree: true
     });
