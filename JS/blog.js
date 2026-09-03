@@ -1,6 +1,6 @@
 /**
  * m0sen.ir - Blog Engine Script
- * Version: 3.0.0 (ساده شده، بدون تاریخ شمسی)
+ * Version: 3.3.0 (تاریخ میلادی با نام ماه‌های فارسی)
  * Stack: Pure Vanilla ES6+
  */
 
@@ -21,15 +21,44 @@
   };
 
   // ================================================================
-  //  1. Thumbnail (تصویر شاخص)
+  //  0. تبدیل تاریخ به فرمت میلادی با نام ماه‌های فارسی
+  // ================================================================
+
+  /**
+   * تبدیل تاریخ میلادی به فرمت: 4 سپتامبر 2026
+   */
+  function formatGregorianDate(date) {
+    if (!date || isNaN(date.getTime())) return '';
+    
+    // نام ماه‌های میلادی به فارسی
+    const months = [
+      'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن',
+      'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'
+    ];
+    
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    
+    return `${day} ${month} ${year}`;
+  }
+
+  // ================================================================
+  //  1. Thumbnail (فقط در صفحه اصلی و آرشیو)
   // ================================================================
 
   function initPostThumbnails() {
+    // بررسی: فقط در صفحات چند پست (صفحه اصلی، آرشیو، برچسب) اجرا بشه
+    if (document.querySelector('body.item-view')) {
+      console.log('📄 صفحه پست تکی است - Thumbnail نمایش داده نمیشود');
+      return;
+    }
+
     const posts = document.querySelectorAll('.post-entry');
-    
+    if (posts.length === 0) return;
+
     posts.forEach((post) => {
       if (post.querySelector('.post-thumbnail')) return;
-      if (post.closest('.single-post')) return;
       
       const content = post.querySelector('.post-content');
       if (!content) return;
@@ -40,6 +69,7 @@
       const thumbnailContainer = document.createElement('div');
       thumbnailContainer.className = 'post-thumbnail';
       
+      // گرفتن تاریخ از المان date
       const dateElement = post.querySelector('.post-date');
       let dateText = '';
       if (dateElement) {
@@ -88,7 +118,31 @@
   }
 
   // ================================================================
-  //  2. انیمیشن‌های اسکرول
+  //  2. تبدیل تاریخ پست‌ها به میلادی با نام ماه‌های فارسی
+  // ================================================================
+
+  function normalizeDatesToGregorian() {
+    const dateElements = document.querySelectorAll('time.post-date');
+    
+    dateElements.forEach((el) => {
+      const isoDate = el.getAttribute('datetime');
+      if (isoDate) {
+        try {
+          const d = new Date(isoDate);
+          if (!isNaN(d.getTime())) {
+            // تبدیل به فرمت: 4 سپتامبر 2026
+            const gregorianDate = formatGregorianDate(d);
+            el.textContent = gregorianDate;
+          }
+        } catch (e) {
+          // در صورت خطا، محتوای اصلی حفظ شود
+        }
+      }
+    });
+  }
+
+  // ================================================================
+  //  3. انیمیشن‌های اسکرول
   // ================================================================
 
   function initScrollAnimations() {
@@ -155,7 +209,7 @@
   }
 
   // ================================================================
-  //  3. خلاصه‌سازی محتوا
+  //  4. خلاصه‌سازی محتوا
   // ================================================================
 
   function initPostSnippets() {
@@ -178,7 +232,7 @@
   }
 
   // ================================================================
-  //  4. کپی کد
+  //  5. کپی کد
   // ================================================================
 
   function initCodeBlocks() {
@@ -269,7 +323,7 @@
   }
 
   // ================================================================
-  //  5. لینک‌های خارجی
+  //  6. لینک‌های خارجی
   // ================================================================
 
   function initExternalLinks() {
@@ -288,7 +342,7 @@
   }
 
   // ================================================================
-  //  6. تاخیر پله‌ای
+  //  7. تاخیر پله‌ای
   // ================================================================
 
   function initStaggeredAnimations() {
@@ -305,11 +359,16 @@
   }
 
   // ================================================================
-  //  7. اجرای اصلی
+  //  8. اجرای اصلی
   // ================================================================
 
   function init() {
+    // مرحله 1: تبدیل تاریخ به میلادی با نام ماه‌های فارسی (قبل از همه)
+    normalizeDatesToGregorian();
+    
+    // مرحله 2: Thumbnail فقط در صفحه اصلی
     initPostThumbnails();
+    
     initPostSnippets();
     initCodeBlocks();
     initExternalLinks();
@@ -321,7 +380,7 @@
   }
 
   // ================================================================
-  //  8. مدیریت رویدادها
+  //  9. مدیریت رویدادها
   // ================================================================
 
   if (document.readyState === 'loading') {
@@ -330,35 +389,28 @@
     init();
   }
 
-  // بارگذاری مجدد انیمیشن‌ها در صورت تغییر محتوا
+  // بازسازی تاریخ‌ها در صورت تغییر محتوا
   if (window.MutationObserver) {
-    const contentObserver = new MutationObserver(function(mutations) {
-      let shouldReinit = false;
-      
-      mutations.forEach(function(mutation) {
-        if (mutation.addedNodes.length > 0) {
-          mutation.addedNodes.forEach(function(node) {
-            if (node.nodeType === 1) {
-              if (node.matches && (
-                node.matches('.post-entry, .side-column .widget, .scroll-animate, .scroll-up') ||
-                node.querySelector('.post-entry, .side-column .widget, .scroll-animate, .scroll-up')
-              )) {
-                shouldReinit = true;
+    const dateObserver = new MutationObserver(function() {
+      const dates = document.querySelectorAll('time.post-date:not([data-converted])');
+      if (dates.length > 0) {
+        dates.forEach(el => {
+          const isoDate = el.getAttribute('datetime');
+          if (isoDate) {
+            try {
+              const d = new Date(isoDate);
+              if (!isNaN(d.getTime())) {
+                const gregorianDate = formatGregorianDate(d);
+                el.textContent = gregorianDate;
+                el.setAttribute('data-converted', 'true');
               }
-            }
-          });
-        }
-      });
-      
-      if (shouldReinit) {
-        console.log('🔄 محتوای جدید شناسایی شد، راه‌اندازی مجدد انیمیشن‌ها...');
-        if ('IntersectionObserver' in window) {
-          setTimeout(initScrollAnimations, 200);
-        }
+            } catch (e) {}
+          }
+        });
       }
     });
     
-    contentObserver.observe(document.body, {
+    dateObserver.observe(document.body, {
       childList: true,
       subtree: true
     });
