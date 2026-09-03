@@ -1,6 +1,6 @@
 /**
  * m0sen.ir Blog Stylesheet
- * Version: 2.3.0 (با Thumbnail خودکار)
+ * Version: 2.3.0 (با Thumbnail و تاریخ شمسی)
  * Author: Mohsen Shayan (m0sen.ir)
  * Dark Minimal Tech Theme
  */
@@ -35,16 +35,10 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   
-  /* ═══ انیمیشن‌ها ═══ */
   --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   --transition-spring: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   --transition-soft: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --transition-exit: all 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  
-  /* ═══ متغیرهای انیمیشن اسکرول ═══ */
-  --scroll-animation-duration: 0.8s;
-  --scroll-animation-delay: 0.1s;
 }
 
 /* ==========================================================================
@@ -71,8 +65,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  
-  /* ═══ انیمیشن fade-in بدنه ═══ */
   animation: fadeInBody 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -93,7 +85,6 @@ a:hover {
   transform: translateY(-1px);
 }
 
-/* ═══ انیمیشن زیرخط لینک‌ها ═══ */
 a::after {
   content: '';
   position: absolute;
@@ -216,50 +207,6 @@ img:hover {
   box-shadow: 0 2px 12px rgba(25, 135, 84, 0.15);
 }
 
-.main-site-btn {
-  font-size: 0.82rem;
-  font-weight: 600;
-  background-color: var(--brand-green);
-  color: #ffffff !important;
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--radius-sm);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  transition: var(--transition-bounce);
-  position: relative;
-  overflow: hidden;
-}
-
-.main-site-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.main-site-btn:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
-.main-site-btn:hover {
-  background-color: var(--brand-green-hover);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(25, 135, 84, 0.3);
-}
-
-.main-site-btn:active {
-  transform: scale(0.95);
-}
-
 .header-nav-section .widget {
   background: transparent !important;
   border: none !important;
@@ -268,7 +215,7 @@ img:hover {
 }
 
 /* ==========================================================================
-   4. Site Layout (Two Columns)
+   4. Site Layout
    ========================================================================== */
 .site-layout {
   max-width: 1100px;
@@ -292,10 +239,8 @@ img:hover {
 }
 
 /* ==========================================================================
-   5. اسکرول انیمیشن‌ها (Intersection Observer)
+   5. Scroll Animations
    ========================================================================== */
-
-/* ═══ کلاس پایه برای المان‌های دارای انیمیشن اسکرول ═══ */
 .scroll-animate {
   opacity: 0;
   transform: translateY(40px);
@@ -308,7 +253,6 @@ img:hover {
   transform: translateY(0);
 }
 
-/* بالا آمدن از پایین */
 .scroll-up {
   opacity: 0;
   transform: translateY(50px);
@@ -321,7 +265,6 @@ img:hover {
   transform: translateY(0);
 }
 
-/* پایین آمدن از بالا */
 .scroll-down {
   opacity: 0;
   transform: translateY(-50px);
@@ -334,7 +277,6 @@ img:hover {
   transform: translateY(0);
 }
 
-/* ظاهر شدن از چپ */
 .scroll-left {
   opacity: 0;
   transform: translateX(-50px);
@@ -347,7 +289,6 @@ img:hover {
   transform: translateX(0);
 }
 
-/* ظاهر شدن از راست */
 .scroll-right {
   opacity: 0;
   transform: translateX(50px);
@@ -360,7 +301,6 @@ img:hover {
   transform: translateX(0);
 }
 
-/* بزرگ‌نمایی با محو شدن */
 .scroll-zoom {
   opacity: 0;
   transform: scale(0.85);
@@ -373,7 +313,6 @@ img:hover {
   transform: scale(1);
 }
 
-/* چرخش ملایم */
 .scroll-rotate {
   opacity: 0;
   transform: rotate(-8deg) scale(0.9);
@@ -386,7 +325,6 @@ img:hover {
   transform: rotate(0deg) scale(1);
 }
 
-/* ═══ تاخیرهای پله‌ای برای اسکرول ═══ */
 .delay-1 { transition-delay: 0.05s; }
 .delay-2 { transition-delay: 0.12s; }
 .delay-3 { transition-delay: 0.19s; }
@@ -398,7 +336,6 @@ img:hover {
 .delay-9 { transition-delay: 0.61s; }
 .delay-10 { transition-delay: 0.68s; }
 
-/* ═══ انیمیشن اسکرول برای ویجت‌های کناری ═══ */
 .side-column .widget {
   opacity: 0;
   transform: translateY(30px);
@@ -413,7 +350,6 @@ img:hover {
   transform: translateY(0);
 }
 
-/* ═══ انیمیشن اسکرول برای فوتر ═══ */
 .site-footer {
   opacity: 0;
   transform: translateY(20px);
@@ -427,10 +363,8 @@ img:hover {
 }
 
 /* ==========================================================================
-   6. Posts & Articles با Thumbnail
+   6. Posts & Articles with Thumbnail
    ========================================================================== */
-
-/* ═══ پست‌ها ═══ */
 .post-entry {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-subtle);
@@ -439,8 +373,6 @@ img:hover {
   margin-bottom: 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   transition: var(--transition-smooth);
-  
-  /* انیمیشن اسکرول */
   opacity: 0;
   transform: translateY(40px);
   transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
@@ -460,16 +392,14 @@ img:hover {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
-/* ═══ چیدمان با Thumbnail ═══ */
 .post-entry.has-thumbnail {
   display: grid;
   grid-template-columns: 220px 1fr;
   gap: 1.5rem;
   align-items: start;
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 
-/* ═══ Thumbnail Container ═══ */
 .post-thumbnail {
   position: relative;
   overflow: hidden;
@@ -486,17 +416,13 @@ img:hover {
   object-fit: cover;
   display: block;
   transition: var(--transition-smooth);
+  opacity: 0;
+  animation: thumbnailFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.15s;
 }
 
 .post-thumbnail img:hover {
   transform: scale(1.05);
-}
-
-/* ═══ انیمیشن ورود تصویر ═══ */
-.post-thumbnail img {
-  opacity: 0;
-  animation: thumbnailFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  animation-delay: 0.2s;
 }
 
 @keyframes thumbnailFadeIn {
@@ -510,7 +436,6 @@ img:hover {
   }
 }
 
-/* ═══ Placeholder برای پست‌های بدون تصویر ═══ */
 .post-thumbnail .thumbnail-placeholder {
   width: 100%;
   height: 100%;
@@ -523,7 +448,6 @@ img:hover {
   font-family: var(--font-mono);
 }
 
-/* ═══ برچسب تاریخ روی تصویر ═══ */
 .post-thumbnail .thumbnail-badge {
   position: absolute;
   bottom: 8px;
@@ -532,26 +456,24 @@ img:hover {
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   color: var(--brand-green-light);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-family: var(--font-mono);
-  padding: 0.15rem 0.6rem;
+  padding: 0.1rem 0.5rem;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(129, 233, 170, 0.15);
   pointer-events: none;
   direction: ltr;
 }
 
-/* ═══ محتوای پست در کنار تصویر ═══ */
 .post-content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
   min-width: 0;
 }
 
-/* ═══ عنوان پست در حالت thumbnail ═══ */
 .has-thumbnail .post-title {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   margin-bottom: 0.2rem;
 }
 
@@ -570,17 +492,18 @@ img:hover {
   transform: translateX(-3px);
 }
 
-/* ═══ متا اطلاعات در حالت thumbnail ═══ */
 .has-thumbnail .post-meta {
-  margin-bottom: 0.3rem;
-  padding-bottom: 0.4rem;
+  margin-bottom: 0.2rem;
+  padding-bottom: 0.3rem;
   border-bottom: 1px solid var(--border-subtle);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
-/* ═══ خلاصه مطلب در حالت thumbnail ═══ */
 .has-thumbnail .snippet-content {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   line-height: 1.7;
 }
 
@@ -592,14 +515,12 @@ img:hover {
   text-overflow: ellipsis;
 }
 
-/* ═══ دکمه ادامه مطلب در حالت thumbnail ═══ */
 .has-thumbnail .read-more-link,
 .has-thumbnail .read-more-btn {
-  font-size: 0.82rem;
-  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
 }
 
-/* ═══ عنوان پست در حالت عادی (بدون thumbnail) ═══ */
 .post-title {
   font-size: 1.45rem;
   font-weight: 700;
@@ -622,7 +543,6 @@ img:hover {
   transform: translateX(-3px);
 }
 
-/* ═══ متا اطلاعات پست ═══ */
 .post-meta {
   display: flex;
   align-items: center;
@@ -659,7 +579,6 @@ img:hover {
   background-color: rgba(25, 135, 84, 0.25);
 }
 
-/* ═══ محتوای پست ═══ */
 .post-content {
   color: var(--text-main);
   font-size: 0.98rem;
@@ -697,7 +616,53 @@ img:hover {
   color: var(--text-muted);
 }
 
-/* ═══ کدها ═══ */
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: 1rem 0;
+  transition: var(--transition-smooth);
+}
+
+.post-content img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.9rem;
+}
+
+.post-content th,
+.post-content td {
+  border: 1px solid var(--border-subtle);
+  padding: 0.6rem 0.85rem;
+  text-align: right;
+}
+
+.post-content th {
+  background-color: var(--bg-panel-hover);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.post-content tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.post-content iframe,
+.post-content .youtube-player {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin: 1rem 0;
+}
+
+/* ==========================================================================
+   7. Code Blocks
+   ========================================================================== */
 code {
   font-family: var(--font-mono);
   background-color: var(--bg-code);
@@ -741,7 +706,34 @@ pre code {
   color: inherit;
 }
 
-/* ═══ دکمه ادامه مطلب ═══ */
+.copy-code-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono, monospace);
+  background: rgba(255, 255, 255, 0.08);
+  color: #9da7b3;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 5;
+}
+
+.copy-code-btn:hover {
+  color: #81e9aa;
+  border-color: #81e9aa;
+  transform: scale(1.05);
+  background: rgba(129, 233, 170, 0.12);
+}
+
+/* ==========================================================================
+   8. Read More
+   ========================================================================== */
 .read-more-link,
 .read-more-btn {
   display: inline-flex;
@@ -773,7 +765,6 @@ pre code {
   transform: translateX(-3px);
 }
 
-/* ═══ خلاصه مطلب (snippet) ═══ */
 .snippet-content {
   color: var(--text-main);
 }
@@ -782,83 +773,8 @@ pre code {
   margin-bottom: 0.5rem;
 }
 
-/* ═══ تصاویر داخل پست ═══ */
-.post-content img {
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-sm);
-  margin: 1rem 0;
-  transition: var(--transition-smooth);
-}
-
-.post-content img:hover {
-  transform: scale(1.01);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-}
-
-/* ═══ جداول داخل پست ═══ */
-.post-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.25rem 0;
-  font-size: 0.9rem;
-}
-
-.post-content th,
-.post-content td {
-  border: 1px solid var(--border-subtle);
-  padding: 0.6rem 0.85rem;
-  text-align: right;
-}
-
-.post-content th {
-  background-color: var(--bg-panel-hover);
-  color: #ffffff;
-  font-weight: 700;
-}
-
-.post-content tr:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.02);
-}
-
-/* ═══ ویدیو و iframe داخل پست ═══ */
-.post-content iframe,
-.post-content .youtube-player {
-  max-width: 100%;
-  border-radius: var(--radius-sm);
-  margin: 1rem 0;
-}
-
 /* ==========================================================================
-   7. دکمه کپی کد (توسط JS ساخته میشه)
-   ========================================================================== */
-.copy-code-btn {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 0.72rem;
-  font-family: var(--font-mono, monospace);
-  background: rgba(255, 255, 255, 0.08);
-  color: #9da7b3;
-  padding: 3px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 5;
-}
-
-.copy-code-btn:hover {
-  color: #81e9aa;
-  border-color: #81e9aa;
-  transform: scale(1.05);
-  background: rgba(129, 233, 170, 0.12);
-}
-
-/* ==========================================================================
-   8. Pagination
+   9. Pagination
    ========================================================================== */
 .blog-pagination {
   margin: 2rem 0;
@@ -932,7 +848,7 @@ pre code {
 }
 
 /* ==========================================================================
-   9. Sidebar & Widgets
+   10. Sidebar & Widgets
    ========================================================================== */
 .side-column {
   display: flex;
@@ -953,10 +869,6 @@ pre code {
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   transition: var(--transition-smooth);
-}
-
-#BlogSearch1 {
-  margin-bottom: 1rem !important; 
 }
 
 .widget:empty,
@@ -1120,8 +1032,30 @@ pre code {
   transform: scale(0.95);
 }
 
+.feed-box a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: var(--transition-smooth);
+}
+
+.feed-box a:hover {
+  background-color: rgba(25, 135, 84, 0.2);
+  border-color: var(--brand-green-light);
+  color: var(--brand-green-light);
+  transform: translateY(-2px);
+}
+
 /* ==========================================================================
-   10. Footer
+   11. Footer
    ========================================================================== */
 .site-footer {
   background-color: var(--bg-panel);
@@ -1142,6 +1076,18 @@ pre code {
   color: var(--text-muted);
 }
 
+.site-footer a {
+  color: var(--brand-green-light);
+}
+
+.site-footer a::after {
+  display: none;
+}
+
+.site-footer a:hover {
+  color: #a3f7c4;
+}
+
 .footer-section .widget {
   background: transparent !important;
   border: none !important;
@@ -1150,7 +1096,7 @@ pre code {
 }
 
 /* ==========================================================================
-   11. Responsive Design
+   12. Responsive Design
    ========================================================================== */
 @media (max-width: 860px) {
   .site-layout {
@@ -1179,7 +1125,6 @@ pre code {
   }
 }
 
-/* ریسپانسیو مخصوص Thumbnail */
 @media (max-width: 700px) {
   .post-entry.has-thumbnail {
     grid-template-columns: 1fr;
@@ -1202,29 +1147,24 @@ pre code {
 }
 
 /* ==========================================================================
-   12. انیمیشن‌های اضافی
+   13. Extra Animations
    ========================================================================== */
-
-/* ═══ انیمیشن تنفس برای دکمه‌ها ═══ */
 @keyframes breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.02); }
 }
 
-/* ═══ انیمیشن پالس برای نشان‌ها ═══ */
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 rgba(129, 233, 170, 0.4); }
   70% { box-shadow: 0 0 0 8px rgba(129, 233, 170, 0); }
   100% { box-shadow: 0 0 0 0 rgba(129, 233, 170, 0); }
 }
 
-/* ═══ انیمیشن شناور برای لوگو ═══ */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-6px); }
 }
 
-/* ═══ کلاس‌های کاربردی ═══ */
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
@@ -1237,12 +1177,10 @@ pre code {
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* ═══ نرم‌تر شدن اسکرول ═══ */
 * {
   scroll-behavior: smooth;
 }
 
-/* ═══ افکت شیشه‌ای (Glassmorphism) ═══ */
 .glass-effect {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
