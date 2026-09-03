@@ -1,6 +1,6 @@
 /**
  * m0sen.ir - Blog Engine Script
- * Version: 2.4.0 (با تاریخ شمسی)
+ * Version: 3.0.0 (ساده شده، بدون تاریخ شمسی)
  * Stack: Pure Vanilla ES6+
  */
 
@@ -21,68 +21,7 @@
   };
 
   // ================================================================
-  //  0. تبدیل تاریخ میلادی به شمسی
-  // ================================================================
-
-  /**
-   * تبدیل تاریخ میلادی به شمسی با فرمت دلخواه
-   * @param {Date} date - تاریخ میلادی
-   * @param {string} format - 'full' = ۱۵ مرداد ۱۴۰۵ | 'short' = ۱۴۰۵/۰۵/۱۵
-   */
-  function toPersianDate(date, format) {
-    if (!date || isNaN(date.getTime())) return '';
-    
-    // الگوریتم تبدیل میلادی به شمسی
-    function gregorianToJalali(gy, gm, gd) {
-      var g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-      var jy, jm, jd;
-      if (gy > 1600) {
-        jy = 979;
-        gy -= 1600;
-      } else {
-        jy = 0;
-        gy -= 621;
-      }
-      var gy2 = (gm > 2) ? (gy + 1) : gy;
-      var days = (gy * 365) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
-      jy += 33 * Math.floor(days / 12053);
-      days %= 12053;
-      jy += 4 * Math.floor(days / 1461);
-      days %= 1461;
-      if (days > 365) {
-        jy += Math.floor((days - 1) / 366);
-        days = (days - 1) % 366;
-      }
-      jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
-      jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
-      return [jy, jm, jd];
-    }
-
-    // نام ماه‌های شمسی
-    const persianMonths = [
-      'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-      'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-    ];
-
-    const gy = date.getFullYear();
-    const gm = date.getMonth() + 1;
-    const gd = date.getDate();
-
-    const [jy, jm, jd] = gregorianToJalali(gy, gm, gd);
-
-    if (format === 'full') {
-      return `${jd} ${persianMonths[jm - 1]} ${jy}`;
-    } else if (format === 'short') {
-      return `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`;
-    } else if (format === 'month-year') {
-      return `${persianMonths[jm - 1]} ${jy}`;
-    } else {
-      return `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`;
-    }
-  }
-
-  // ================================================================
-  //  1. Thumbnail با استفاده از Featured Image
+  //  1. Thumbnail (تصویر شاخص)
   // ================================================================
 
   function initPostThumbnails() {
@@ -104,18 +43,7 @@
       const dateElement = post.querySelector('.post-date');
       let dateText = '';
       if (dateElement) {
-        const isoDate = dateElement.getAttribute('datetime');
-        if (isoDate) {
-          try {
-            const d = new Date(isoDate);
-            if (!isNaN(d.getTime())) {
-              dateText = toPersianDate(d, 'short');
-            }
-          } catch (e) {}
-        }
-        if (!dateText) {
-          dateText = dateElement.textContent.trim();
-        }
+        dateText = dateElement.textContent.trim();
       }
       
       if (firstImage) {
@@ -360,55 +288,7 @@
   }
 
   // ================================================================
-  //  6. تبدیل تاریخ‌ها به شمسی
-  // ================================================================
-
-  function normalizeDates() {
-    const dateElements = document.querySelectorAll('time.post-date');
-    
-    dateElements.forEach((el) => {
-      const isoDate = el.getAttribute('datetime');
-      if (isoDate) {
-        try {
-          const d = new Date(isoDate);
-          if (!isNaN(d.getTime())) {
-            // فرمت کامل شمسی: ۱۵ مرداد ۱۴۰۵
-            const persianDate = toPersianDate(d, 'full');
-            el.textContent = persianDate;
-            
-            // به‌روزرسانی datetime با تاریخ شمسی (اختیاری)
-            // el.setAttribute('datetime', persianDate);
-          }
-        } catch (e) {}
-      }
-    });
-
-    // ===== تبدیل تاریخ‌های بایگانی =====
-    const archiveLinks = document.querySelectorAll('#archivesList a, .widget-list a');
-    archiveLinks.forEach((link) => {
-      const text = link.textContent.trim();
-      // تشخیص تاریخ‌های میلادی مثل "September 2026" یا "2026/09"
-      const match = text.match(/(\w+)\s+(\d{4})/); // September 2026
-      if (match) {
-        const monthName = match[1];
-        const year = parseInt(match[2]);
-        const monthMap = {
-          'January': 0, 'February': 1, 'March': 2, 'April': 3,
-          'May': 4, 'June': 5, 'July': 6, 'August': 7,
-          'September': 8, 'October': 9, 'November': 10, 'December': 11
-        };
-        const month = monthMap[monthName];
-        if (month !== undefined && year) {
-          const date = new Date(year, month, 1);
-          const persianDate = toPersianDate(date, 'month-year');
-          link.textContent = persianDate;
-        }
-      }
-    });
-  }
-
-  // ================================================================
-  //  7. بهینه‌سازی تاخیر پله‌ای
+  //  6. تاخیر پله‌ای
   // ================================================================
 
   function initStaggeredAnimations() {
@@ -425,37 +305,23 @@
   }
 
   // ================================================================
-  //  8. اجرای اصلی
+  //  7. اجرای اصلی
   // ================================================================
 
   function init() {
-    // مرحله 1: تبدیل تاریخ‌ها به شمسی (قبل از همه)
-    normalizeDates();
-    
-    // مرحله 2: Thumbnail
     initPostThumbnails();
-    
-    // مرحله 3: خلاصه‌سازی
     initPostSnippets();
-    
-    // مرحله 4: کپی کد
     initCodeBlocks();
-    
-    // مرحله 5: لینک‌های خارجی
     initExternalLinks();
-    
-    // مرحله 6: تاخیر پله‌ای
     initStaggeredAnimations();
     
-    // مرحله 7: انیمیشن‌های اسکرول
     setTimeout(initScrollAnimations, 100);
     
     console.log('🚀 m0sen.ir Blog Engine با موفقیت بارگذاری شد!');
-    console.log('📅 تاریخ امروز:', toPersianDate(new Date(), 'full'));
   }
 
   // ================================================================
-  //  9. مدیریت رویدادها
+  //  8. مدیریت رویدادها
   // ================================================================
 
   if (document.readyState === 'loading') {
@@ -464,29 +330,35 @@
     init();
   }
 
-  // بازسازی تاریخ‌ها در صورت تغییر محتوا (مثلاً در SPA)
+  // بارگذاری مجدد انیمیشن‌ها در صورت تغییر محتوا
   if (window.MutationObserver) {
-    const dateObserver = new MutationObserver(function() {
-      // بررسی وجود تاریخ‌های جدید
-      const dates = document.querySelectorAll('time.post-date:not([data-converted])');
-      if (dates.length > 0) {
-        dates.forEach(el => {
-          const isoDate = el.getAttribute('datetime');
-          if (isoDate) {
-            try {
-              const d = new Date(isoDate);
-              if (!isNaN(d.getTime())) {
-                const persianDate = toPersianDate(d, 'full');
-                el.textContent = persianDate;
-                el.setAttribute('data-converted', 'true');
+    const contentObserver = new MutationObserver(function(mutations) {
+      let shouldReinit = false;
+      
+      mutations.forEach(function(mutation) {
+        if (mutation.addedNodes.length > 0) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) {
+              if (node.matches && (
+                node.matches('.post-entry, .side-column .widget, .scroll-animate, .scroll-up') ||
+                node.querySelector('.post-entry, .side-column .widget, .scroll-animate, .scroll-up')
+              )) {
+                shouldReinit = true;
               }
-            } catch (e) {}
-          }
-        });
+            }
+          });
+        }
+      });
+      
+      if (shouldReinit) {
+        console.log('🔄 محتوای جدید شناسایی شد، راه‌اندازی مجدد انیمیشن‌ها...');
+        if ('IntersectionObserver' in window) {
+          setTimeout(initScrollAnimations, 200);
+        }
       }
     });
     
-    dateObserver.observe(document.body, {
+    contentObserver.observe(document.body, {
       childList: true,
       subtree: true
     });
