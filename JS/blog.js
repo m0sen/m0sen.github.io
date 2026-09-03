@@ -202,7 +202,6 @@
           await navigator.clipboard.writeText(codeText);
           
           // نمایش موفقیت
-          const originalText = copyBtn.textContent;
           copyBtn.textContent = CONFIG.copySuccessText;
           copyBtn.style.color = '#81e9aa';
           copyBtn.style.borderColor = '#81e9aa';
@@ -297,17 +296,12 @@
    * (برای المان‌هایی که کلاس delay-* دارند)
    */
   function initStaggeredAnimations() {
-    // این تابع در حال حاضر توسط CSS و کلاس‌های delay مدیریت می‌شود
-    // اما برای اطمینان از اجرای مجدد انیمیشن‌ها در صورت لزوم
-    
     const staggeredElements = document.querySelectorAll(
       '.post-entry, .side-column .widget'
     );
     
-    // اطمینان از اینکه المان‌ها state اولیه رو دارند
     staggeredElements.forEach((el, index) => {
       if (!el.classList.contains('visible')) {
-        // اگر المان قبلاً visible نبود، یک تاخیر پویا اضافه کن
         const delay = Math.min((index * 0.07), 0.6);
         el.style.transitionDelay = `${delay}s`;
       }
@@ -320,7 +314,6 @@
 
   /**
    * تشخیص مرورگر و اعمال polyfill در صورت نیاز
-   * (برای پشتیبانی از Intersection Observer در مرورگرهای قدیمی)
    */
   function checkBrowserSupport() {
     if (!('IntersectionObserver' in window)) {
@@ -358,7 +351,6 @@
     
     // انیمیشن‌های اسکرول (در صورت پشتیبانی)
     if (supportsObserver) {
-      // تاخیر کوچک برای اطمینان از رندر شدن DOM
       setTimeout(initScrollAnimations, 100);
     }
     
@@ -374,21 +366,18 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    // اگر DOM قبلاً آماده است، مستقیماً اجرا کن
     init();
   }
 
-  // ═══ بارگذاری مجدد انیمیشن‌ها در صورت تغییر محتوا (مثلاً در SPA) ═══
-  // این قابلیت برای سایت‌های داینامیک مفید است
+  // ═══ بارگذاری مجدد انیمیشن‌ها در صورت تغییر محتوا ═══
   if (window.MutationObserver) {
     const contentObserver = new MutationObserver(function(mutations) {
       let shouldReinit = false;
       
       mutations.forEach(function(mutation) {
         if (mutation.addedNodes.length > 0) {
-          // بررسی وجود المان‌های جدید با کلاس‌های انیمیشن
           mutation.addedNodes.forEach(function(node) {
-            if (node.nodeType === 1) { // عنصر DOM
+            if (node.nodeType === 1) {
               if (node.matches && (
                 node.matches('.post-entry, .side-column .widget, .scroll-animate, .scroll-up') ||
                 node.querySelector('.post-entry, .side-column .widget, .scroll-animate, .scroll-up')
@@ -402,14 +391,12 @@
       
       if (shouldReinit) {
         console.log('🔄 محتوای جدید شناسایی شد، راه‌اندازی مجدد انیمیشن‌ها...');
-        // راه‌اندازی مجدد انیمیشن‌های اسکرول
         if ('IntersectionObserver' in window) {
           setTimeout(initScrollAnimations, 200);
         }
       }
     });
     
-    // شروع مشاهده تغییرات در بدنه
     contentObserver.observe(document.body, {
       childList: true,
       subtree: true
