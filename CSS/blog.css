@@ -1,6 +1,6 @@
 /**
  * m0sen.ir Blog Stylesheet
- * Version: 2.2.0 (با انیمیشن‌های اسکرول و نرم‌سازی کامل)
+ * Version: 2.3.0 (با Thumbnail خودکار)
  * Author: Mohsen Shayan (m0sen.ir)
  * Dark Minimal Tech Theme
  */
@@ -303,13 +303,10 @@ img:hover {
               transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ═══ حالت دیده شدن (فعال شدن توسط JS) ═══ */
 .scroll-animate.visible {
   opacity: 1;
   transform: translateY(0);
 }
-
-/* ═══ انواع مختلف انیمیشن اسکرول ═══ */
 
 /* بالا آمدن از پایین */
 .scroll-up {
@@ -416,28 +413,6 @@ img:hover {
   transform: translateY(0);
 }
 
-/* ═══ انیمیشن اسکرول برای پست‌ها ═══ */
-.post-entry {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
-              border-color 0.3s ease,
-              box-shadow 0.3s ease,
-              transform 0.3s ease;
-}
-
-.post-entry.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.post-entry:hover {
-  border-color: rgba(129, 233, 170, 0.25);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-}
-
 /* ═══ انیمیشن اسکرول برای فوتر ═══ */
 .site-footer {
   opacity: 0;
@@ -452,8 +427,179 @@ img:hover {
 }
 
 /* ==========================================================================
-   6. Posts & Articles (Main Column)
+   6. Posts & Articles با Thumbnail
    ========================================================================== */
+
+/* ═══ پست‌ها ═══ */
+.post-entry {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: var(--transition-smooth);
+  
+  /* انیمیشن اسکرول */
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+.post-entry.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.post-entry:hover {
+  border-color: rgba(129, 233, 170, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* ═══ چیدمان با Thumbnail ═══ */
+.post-entry.has-thumbnail {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  padding: 1.5rem;
+}
+
+/* ═══ Thumbnail Container ═══ */
+.post-thumbnail {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-code);
+  aspect-ratio: 16 / 10;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.post-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: var(--transition-smooth);
+}
+
+.post-thumbnail img:hover {
+  transform: scale(1.05);
+}
+
+/* ═══ انیمیشن ورود تصویر ═══ */
+.post-thumbnail img {
+  opacity: 0;
+  animation: thumbnailFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes thumbnailFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ═══ Placeholder برای پست‌های بدون تصویر ═══ */
+.post-thumbnail .thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-panel-hover), var(--bg-body));
+  color: var(--text-dim);
+  font-size: 2.5rem;
+  font-family: var(--font-mono);
+}
+
+/* ═══ برچسب تاریخ روی تصویر ═══ */
+.post-thumbnail .thumbnail-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--brand-green-light);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(129, 233, 170, 0.15);
+  pointer-events: none;
+  direction: ltr;
+}
+
+/* ═══ محتوای پست در کنار تصویر ═══ */
+.post-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+/* ═══ عنوان پست در حالت thumbnail ═══ */
+.has-thumbnail .post-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.2rem;
+}
+
+.has-thumbnail .post-title a {
+  color: var(--title-orange);
+  transition: var(--transition-smooth);
+  display: inline-block;
+}
+
+.has-thumbnail .post-title a::after {
+  display: none;
+}
+
+.has-thumbnail .post-title a:hover {
+  color: var(--title-orange-hover);
+  transform: translateX(-3px);
+}
+
+/* ═══ متا اطلاعات در حالت thumbnail ═══ */
+.has-thumbnail .post-meta {
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+}
+
+/* ═══ خلاصه مطلب در حالت thumbnail ═══ */
+.has-thumbnail .snippet-content {
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.has-thumbnail .summary-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ═══ دکمه ادامه مطلب در حالت thumbnail ═══ */
+.has-thumbnail .read-more-link,
+.has-thumbnail .read-more-btn {
+  font-size: 0.82rem;
+  margin-top: 0.5rem;
+}
+
+/* ═══ عنوان پست در حالت عادی (بدون thumbnail) ═══ */
 .post-title {
   font-size: 1.45rem;
   font-weight: 700;
@@ -476,12 +622,24 @@ img:hover {
   transform: translateX(-3px);
 }
 
+/* ═══ متا اطلاعات پست ═══ */
 .post-meta {
   display: flex;
   align-items: center;
   gap: 1rem;
   font-size: 0.82rem;
   color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.post-author {
+  color: var(--text-muted);
+}
+
+.post-author a {
+  color: var(--brand-green-light);
 }
 
 .badge-date {
@@ -501,6 +659,7 @@ img:hover {
   background-color: rgba(25, 135, 84, 0.25);
 }
 
+/* ═══ محتوای پست ═══ */
 .post-content {
   color: var(--text-main);
   font-size: 0.98rem;
@@ -519,6 +678,26 @@ img:hover {
   font-weight: 700;
 }
 
+.post-content ul,
+.post-content ol {
+  padding-right: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.post-content li {
+  margin-bottom: 0.4rem;
+}
+
+.post-content blockquote {
+  border-right: 4px solid var(--brand-green-light);
+  padding: 0.75rem 1.25rem;
+  margin: 1.25rem 0;
+  background-color: rgba(129, 233, 170, 0.05);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+
+/* ═══ کدها ═══ */
 code {
   font-family: var(--font-mono);
   background-color: var(--bg-code);
@@ -548,6 +727,7 @@ pre {
   line-height: 1.6;
   direction: ltr;
   transition: var(--transition-smooth);
+  position: relative;
 }
 
 pre:hover {
@@ -555,6 +735,14 @@ pre:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* ═══ دکمه ادامه مطلب ═══ */
+.read-more-link,
 .read-more-btn {
   display: inline-flex;
   align-items: center;
@@ -567,23 +755,110 @@ pre:hover {
   position: relative;
 }
 
+.read-more-link::after,
 .read-more-btn::after {
   content: '←';
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-block;
 }
 
+.read-more-link:hover::after,
 .read-more-btn:hover::after {
   transform: translateX(-5px);
 }
 
+.read-more-link:hover,
 .read-more-btn:hover {
   color: #a3f7c4;
   transform: translateX(-3px);
 }
 
+/* ═══ خلاصه مطلب (snippet) ═══ */
+.snippet-content {
+  color: var(--text-main);
+}
+
+.summary-text {
+  margin-bottom: 0.5rem;
+}
+
+/* ═══ تصاویر داخل پست ═══ */
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: 1rem 0;
+  transition: var(--transition-smooth);
+}
+
+.post-content img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ═══ جداول داخل پست ═══ */
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.9rem;
+}
+
+.post-content th,
+.post-content td {
+  border: 1px solid var(--border-subtle);
+  padding: 0.6rem 0.85rem;
+  text-align: right;
+}
+
+.post-content th {
+  background-color: var(--bg-panel-hover);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.post-content tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* ═══ ویدیو و iframe داخل پست ═══ */
+.post-content iframe,
+.post-content .youtube-player {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin: 1rem 0;
+}
+
 /* ==========================================================================
-   7. Pagination
+   7. دکمه کپی کد (توسط JS ساخته میشه)
+   ========================================================================== */
+.copy-code-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono, monospace);
+  background: rgba(255, 255, 255, 0.08);
+  color: #9da7b3;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 5;
+}
+
+.copy-code-btn:hover {
+  color: #81e9aa;
+  border-color: #81e9aa;
+  transform: scale(1.05);
+  background: rgba(129, 233, 170, 0.12);
+}
+
+/* ==========================================================================
+   8. Pagination
    ========================================================================== */
 .blog-pagination {
   margin: 2rem 0;
@@ -657,7 +932,7 @@ pre:hover {
 }
 
 /* ==========================================================================
-   8. Sidebar & Widgets
+   9. Sidebar & Widgets
    ========================================================================== */
 .side-column {
   display: flex;
@@ -846,7 +1121,7 @@ pre:hover {
 }
 
 /* ==========================================================================
-   9. Footer
+   10. Footer
    ========================================================================== */
 .site-footer {
   background-color: var(--bg-panel);
@@ -875,7 +1150,7 @@ pre:hover {
 }
 
 /* ==========================================================================
-   10. Responsive Design
+   11. Responsive Design
    ========================================================================== */
 @media (max-width: 860px) {
   .site-layout {
@@ -904,8 +1179,30 @@ pre:hover {
   }
 }
 
+/* ریسپانسیو مخصوص Thumbnail */
+@media (max-width: 700px) {
+  .post-entry.has-thumbnail {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  
+  .post-thumbnail {
+    aspect-ratio: 16 / 9;
+    max-height: 200px;
+  }
+  
+  .has-thumbnail .post-title {
+    font-size: 1.1rem;
+  }
+  
+  .has-thumbnail .summary-text {
+    -webkit-line-clamp: 2;
+  }
+}
+
 /* ==========================================================================
-   11. انیمیشن‌های اضافی
+   12. انیمیشن‌های اضافی
    ========================================================================== */
 
 /* ═══ انیمیشن تنفس برای دکمه‌ها ═══ */
