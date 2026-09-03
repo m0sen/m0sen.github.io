@@ -1,70 +1,67 @@
 /**
- * m0sen.ir - Dynamic Engine (v1.0.4)
+ * m0sen.ir - Blog Engine (v1.0.5)
+ * Date Format: YYYY/MM/DD (Gregorian)
  */
 
 // Helper to convert Persian/Arabic digits to English digits
 const toEnglishDigits = (str) => {
   if (!str) return '';
-  return str.replace(/[۰-۹]/g, d => d.charCodeAt(0) - 1776)
-            .replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
+  return String(str)
+    .replace(/[۰-۹]/g, d => d.charCodeAt(0) - 1776)
+    .replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
 };
 
-// Shamsi Formatter to exact format: "۱۱ شهریور ۱۴۰۵"
-const formatToShamsiDayMonthYear = (date) => {
-  const formatter = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
-  const parts = formatter.formatToParts(date);
-  const day = parts.find(p => p.type === 'day')?.value || '';
-  const month = parts.find(p => p.type === 'month')?.value || '';
-  const year = parts.find(p => p.type === 'year')?.value || '';
-  return `${day} ${month} ${year}`.trim();
+// Formats a Date object to "YYYY/MM/DD"
+const formatGregorianYMD = (date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}/${m}/${d}`;
+};
+
+// Gregorian month names mapping for parsing Blogger raw strings
+const gregorianMonthMap = {
+  // English
+  january: 1, jan: 1, february: 2, feb: 2, march: 3, mar: 3, april: 4, apr: 4,
+  may: 5, june: 6, jun: 6, july: 7, jul: 7, august: 8, aug: 8,
+  september: 9, sep: 9, sept: 9, october: 10, oct: 10, november: 11, nov: 11, december: 12, dec: 12,
+  // Persian transliterated Gregorian months
+  'ژانویه': 1, 'فوریه': 2, 'مارس': 3, 'آوریل': 4, 'مه': 5, 'می': 5, 'ژوئن': 6,
+  'ژوئیه': 7, 'جولای': 7, 'اوت': 8, 'آگوست': 8, 'سپتامبر': 9, 'اکتبر': 10, 'نوامبر': 11, 'دسامبر': 12
 };
 
 document.addEventListener('DOMContentLoaded', () => {
 
   // -------------------------------------------------------------
-  // 1. Shamsi Post Dates Formatter (Resolves "چهارشنبه, شهریور ۱۱, ۱۴۰۵" -> "۱۱ شهریور ۱۴۰۵")
+  // 1. Gregorian Post Dates Formatter (YYYY/MM/DD e.g. 2008/12/17)
   // -------------------------------------------------------------
   const dateElements = document.querySelectorAll('.post-date');
-  const persianMonthsList = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
-
   dateElements.forEach(el => {
-    const rawText = el.textContent.trim();
-    if (!rawText) return;
+    const raw = toEnglishDigits(el.textContent.trim());
+    if (!raw) return;
 
-    // Check if it's already a Persian date string like "چهارشنبه, شهریور ۱۱, ۱۴۰۵"
-    const cleanedText = toEnglishDigits(rawText);
-    const foundMonth = persianMonthsList.find(m => rawText.includes(m));
-
-    if (foundMonth) {
-      // Extract numbers for day and year
-      const numbers = cleanedText.match(/\d+/g);
-      if (numbers && numbers.length >= 2) {
-        // usually [11, 1405]
-        const day = numbers[0];
-        const year = numbers[1].length === 4 ? numbers[1] : (numbers[0].length === 4 ? numbers[0] : numbers[1]);
-        const actualDay = (day === year) ? numbers[1] : day;
-        
-        // Convert numbers back to Persian digits
-        const faDay = new Intl.NumberFormat('fa-IR').format(parseInt(actualDay, 10));
-        const faYear = new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(parseInt(year, 10));
-        
-        el.textContent = `${faDay} ${foundMonth} ${faYear}`;
-        return;
-      }
+    // Check if directly parseable by JS Date (ISO, RFC2822, etc.)
+    const directDate = new Date(raw);
+    if (!isNaN(directDate.getTime()) && directDate.getFullYear() > 1990) {
+      el.textContent = formatGregorianYMD(directDate);
+      return;
     }
 
-    // Fallback: standard date parsing
-    try {
-      const parsed = new Date(rawText);
-      if (!isNaN(parsed.getTime())) {
-        el.textContent = formatToShamsiDayMonthYear(parsed);
+    // Try parsing strings containing month names (e.g., "سپتامبر 11, 2026" or "11 September 2026")
+    const lower = raw.toLowerCase();
+    for (const [mName, mVal] of Object.entries(gregorianMonthMap)) {
+      if (lower.includes(mName)) {
+        const numbers = raw.match(/\d+/g);
+        if (numbers && numbers.length >= 2) {
+          const year = numbers.find(n => n.length === 4) || numbers[numbers.length - 1];
+          const day = numbers.find(n => n !== year) || '1';
+          const y = parseInt(year, 10);
+          const m = String(mVal).padStart(2, '0');
+          const d = String(parseInt(day, 10)).padStart(2, '0');
+          el.textContent = `${y}/${m}/${d}`;
+          return;
+        }
       }
-    } catch (e) {
-      // Keep original if failed
     }
   });
 
@@ -90,45 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   const labelsCloud = document.getElementById('dynamicLabelsCloud');
   if (labelsCloud) {
-    const feedCallbackName = 'onBloggerLabelsLoaded_' + Math.floor(Math.random() * 10000);
+    const callbackName = 'onLabelsFeed_' + Math.floor(Math.random() * 100000);
     
-    window[feedCallbackName] = function(root) {
-      const categories = root?.feed?.category || [];
-      const labelMap = new Map();
-
-      categories.forEach(cat => {
-        const term = cat.term?.trim();
-        if (term && !labelMap.has(term)) {
-          labelMap.set(term, `/search/label/${encodeURIComponent(term)}`);
-        }
-      });
-
-      if (labelMap.size > 0) {
-        labelsCloud.innerHTML = '';
-        labelMap.forEach((url
-  const summaryContainers = document.querySelectorAll('[data-summary="true"]');
-  summaryContainers.forEach(container => {
-    const permalink = container.getAttribute('data-url') || '#';
-    const rawText = container.textContent.trim().replace(/\s+/g, ' ');
-    const snippetLimit = 220;
-
-    let truncated = rawText;
-    if (rawText.length > snippetLimit) {
-      truncated = rawText.slice(0, snippetLimit) + '...';
-    }
-
-    container.innerHTML = `${truncated} <a href="${permalink}" class="inline-readmore">ادامه مطلب ←</a>`;
-  });
-
-  // -------------------------------------------------------------
-  // 3. Dynamic Labels Loader via Blogger JSON Feed API
-  // -------------------------------------------------------------
-  const labelsCloud = document.getElementById('dynamicLabelsCloud');
-  if (labelsCloud) {
-    const feedCallbackName = 'onBloggerLabelsLoaded_' + Math.floor(Math.random() * 10000);
-    
-    window[feedCallbackName] = function(root) {
-      const categories = root?.feed?.category || [];
+    window[callbackName] = function(data) {
+      const categories = data?.feed?.category || [];
       const labelMap = new Map();
 
       categories.forEach(cat => {
@@ -150,26 +112,30 @@ document.addEventListener('DOMContentLoaded', () => {
         labelsCloud.innerHTML = '<span style="color:var(--text-sub);font-size:0.8rem;">برچسبی یافت نشد</span>';
       }
 
-      // Cleanup
-      delete windowامبر': 10, 'دسامبر': 11
-  };
+      delete window[callbackName];
+      const scriptNode = document.getElementById(callbackName);
+      if (scriptNode) scriptNode.remove();
+    };
 
+    const script = document.createElement('script');
+    script.id = callbackName;
+    script.src = `/feeds/posts/default?alt=json-in-script&callback=${callbackName}&max-results=0`;
+    document.body.appendChild(script);
+  }
+
+  // -------------------------------------------------------------
+  // 4. Archives Formatter (YYYY/MM e.g. "2026/09")
+  // -------------------------------------------------------------
   const archiveLinks = document.querySelectorAll('#archivesList a');
   archiveLinks.forEach(link => {
-    const rawText = toEnglishDigits(link.textContent.trim().toLowerCase());
-    
-    for (const [mName, mIndex] of Object.entries(gregorianMonths)) {
-      if (rawText.includes(mName)) {
-        const yearMatch = rawText.match(/\d{4}/);
+    const raw = toEnglishDigits(link.textContent.trim().toLowerCase());
+    for (const [mName, mVal] of Object.entries(gregorianMonthMap)) {
+      if (raw.includes(mName)) {
+        const yearMatch = raw.match(/\d{4}/);
         if (yearMatch) {
-          const year = parseInt(yearMatch[0], 10);
-          const approxDate = new Date(year, mIndex, 15);
-          
-          const shamsiFormatter = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-            month: 'long',
-            year: 'numeric'
-          });
-          link.textContent = shamsiFormatter.format(approxDate);
+          const y = yearMatch[0];
+          const m = String(mVal).padStart(2, '0');
+          link.textContent = `${y}/${m}`;
         }
         break;
       }
