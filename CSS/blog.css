@@ -1,0 +1,188 @@
+/* ==========================================================================
+   m0sen.ir - Dark Minimal Classic Blog Theme
+   ========================================================================== */
+
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+
+:root {
+  --bg-color: #1d1f20;
+  --panel-bg: #242628;
+  --panel-border: rgba(255, 255, 255, 0.05);
+  --text-main: #d1d5db;
+  --text-muted: #9ca3af;
+  --primary-green: #198754;
+  --accent-green: #81e9aa;
+  --accent-orange: #fba056;
+  --font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --max-width: 768px;
+  --transition: all 0.2s ease-in-out;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  direction: rtl;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 15px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* Header */
+.site-header {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 1px solid var(--panel-border);
+  margin-bottom: 2rem;
+}
+
+.site-header .brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.site-title a {
+  color: var(--accent-green);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+
+.site-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Post Cards */
+.post-entry {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: var(--transition);
+}
+
+.post-entry:hover {
+  border-color: rgba(129, 233, 170, 0.2);
+}
+
+.post-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.post-title a {
+  color: var(--accent-orange);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.post-title a:hover {
+  opacity: 0.85;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--panel-border);
+}
+
+.post-meta .shamsi-date {
+  color: var(--accent-green);
+  font-feature-settings: "ss01";
+}
+
+.post-content {
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.post-content p {
+  margin-bottom: 1rem;
+}
+
+.post-content a {
+  color: var(--accent-green);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.post-content pre, .post-content code {
+  font-family: monospace;
+  direction: ltr;
+  text-align: left;
+}
+
+.post-content pre {
+  background: #151718;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  border: 1px solid var(--panel-border);
+  margin-bottom: 1rem;
+}
+
+.post-content code:not(pre code) {
+  background: #151718;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  color: var(--accent-orange);
+}
+
+/* Pagination / Classic Blogger Nav */
+.blog-pagination {
+  display: flex;
+  justify-content: space-between;
+  margin: 2.5rem 0;
+  font-size: 0.875rem;
+}
+
+.blog-pagination a {
+  color: var(--accent-green);
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.blog-pagination a:hover {
+  border-color: var(--accent-green);
+}
+
+/* Footer */
+.site-footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--panel-border);
+  margin-top: 3rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
