@@ -1,5 +1,5 @@
 /* ==========================================================================
-   m0sen.ir - Two Column Tech Blog Layout (v1.0.2)
+   m0sen.ir - Two Column Tech Blog Layout (v1.0.3)
    ========================================================================== */
 
 :root {
@@ -115,7 +115,7 @@ body {
   }
 }
 
-/* Posts Stream */
+/* Main Content & Articles */
 .main-content {
   display: flex;
   flex-direction: column;
@@ -175,34 +175,26 @@ body {
   line-height: 1.9;
 }
 
-/* Snippet on Home Page */
+/* Inline Read More link at the end of summary */
 .snippet-content {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   color: var(--text-muted);
 }
 
-.post-readmore {
-  margin-top: 1.25rem;
-}
-
-.readmore-link {
+.inline-readmore {
   display: inline-block;
+  margin-right: 6px;
   color: var(--accent-green);
-  font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
   transition: var(--transition);
 }
 
-.readmore-link:hover {
+.inline-readmore:hover {
   color: #fff;
-  transform: translateX(-4px);
+  text-decoration: underline;
 }
 
-/* Content Details */
+/* Full Article Styles */
 .full-content p {
   margin-bottom: 1.25rem;
 }
@@ -234,7 +226,39 @@ body {
   font-size: 0.88rem;
 }
 
-/* Side Column Widgets */
+/* Post tags inside single post */
+.post-tags {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.tags-label {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+}
+
+.post-tag-link {
+  background: #161819;
+  color: var(--accent-green);
+  border: 1px solid var(--panel-border);
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.post-tag-link:hover {
+  background: var(--panel-hover);
+  border-color: var(--accent-green);
+}
+
+/* Side Column */
 .side-column {
   display: flex;
   flex-direction: column;
@@ -300,7 +324,7 @@ body {
   background: #146c43;
 }
 
-/* Labels */
+/* Dynamic Cloud */
 .labels-cloud {
   display: flex;
   flex-wrap: wrap;
