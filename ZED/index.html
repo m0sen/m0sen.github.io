@@ -13,17 +13,20 @@
   </header>
 
   <main class="container">
-    <!-- 输入区 -->
+
+    <!-- بخش ورودی -->
     <section class="card input-card">
       <label for="inputLinks" class="card-title">کانفیگ‌های ورودی</label>
-      <textarea id="inputLinks" rows="8" placeholder="هر خط یک لینک کانفیگ (vless://, trojan://, vmess://, ss://)&#10;vless://uuid@host:443?security=tls&sni=example.com#نام-کانفیگ&#10;trojan://password@host:443?sni=example.com#نام-کانفیگ"></textarea>
+      <textarea id="inputLinks" rows="8"
+        placeholder="هر خط یک لینک کانفیگ (vless://, trojan://, vmess://, ss://)&#10;vless://uuid@host:443?security=tls&sni=example.com#نام-کانفیگ&#10;trojan://password@host:443?sni=example.com#نام-کانفیگ"></textarea>
       <div class="stats" id="inputStats"></div>
     </section>
 
-    <!-- 选项区 -->
+    <!-- بخش تنظیمات -->
     <section class="card options-card">
       <h2 class="card-title">تنظیمات پردازش</h2>
 
+      <!-- گزینهٔ تغییر نام -->
       <div class="option-group">
         <label class="option-label">
           <input type="checkbox" id="enableRename" checked>
@@ -31,38 +34,51 @@
         </label>
         <div class="option-body" id="renameBody">
           <input type="text" id="renamePrefix" placeholder="پیشوند جدید (مثلاً: MyConfig)">
-          <p class="hint">نام جدید به صورت پیشوند + شماره ترتیب ساخته می‌شود. برای حفظ نام اصلی خالی بگذارید.</p>
+          <p class="hint">
+            نام جدید به صورت «پیشوند + شماره ترتیب» ساخته می‌شود.
+            برای حفظ نام اصلی، این فیلد را خالی بگذارید.
+          </p>
         </div>
       </div>
 
+      <!-- گزینهٔ ECH -->
       <div class="option-group">
         <label class="option-label">
           <input type="checkbox" id="enableEch">
           <span>افزودن پارامتر ECH</span>
         </label>
         <div class="option-body" id="echBody" style="display:none">
-          <label for="echValue" class="field-label">مقدار ECH (بدون ذکر <code>ech=</code>)</label>
-          <input type="text" id="echValue" placeholder="مثال: yes  یا  cloudflare-ech.com+https://dns.alidns.com/dns-query">
+          <label for="echValue" class="field-label">
+            مقدار ECH (بدون ذکر <code>ech=</code>)
+          </label>
+          <input type="text" id="echValue"
+            placeholder="مثال: cloudflare-ech.com+udp://1.1.1.1">
           <p class="hint">
-            <strong>توجه:</strong> فرمت دقیق ECH از شواهد عمومی قابل تأیید نیست.
-            لطفاً مقدار معتبر را خودتان وارد کنید. مقادیر مثال:
-            <code>yes</code> · <code>cloudflare-ech.com+https://dns.alidns.com/dns-query</code>
+            <strong>توجه:</strong> فرمت دقیق ECH از شواهد عمومی قابل تأیید نیست،
+            بنابراین مقدار معتبر را خودتان وارد کنید. نمونه‌های پیشنهادی:
+            <br>
+            <code>cloudflare-ech.com+udp://1.1.1.1</code>
+            <br>
+            <code>cloudflare-ech.com+udp://8.8.8.8</code>
           </p>
         </div>
       </div>
 
+      <!-- گزینهٔ حذف Fragment -->
       <div class="option-group">
         <label class="option-label">
           <input type="checkbox" id="removeFragment">
           <span>حذف Fragment اصلی قبل از تغییر نام</span>
         </label>
-        <p class="hint">اگر فعال باشد، بخش <code>#...</code> لینک‌های ورودی حذف و با نام جدید جایگزین می‌شود.</p>
+        <p class="hint">
+          اگر فعال باشد، بخش <code>#...</code> لینک‌های ورودی حذف و با نام جدید جایگزین می‌شود.
+        </p>
       </div>
 
       <button id="processBtn" class="btn-primary">پردازش لینک‌ها</button>
     </section>
 
-    <!-- 输出区 -->
+    <!-- بخش خروجی -->
     <section class="card output-card">
       <div class="output-header">
         <h2 class="card-title">خروجی</h2>
@@ -71,11 +87,12 @@
           <button id="downloadBtn" class="btn-sm" disabled>دانلود فایل</button>
         </div>
       </div>
-      <textarea id="outputLinks" rows="10" readonly placeholder="نتیجه پردازش اینجا نمایش داده می‌شود..."></textarea>
+      <textarea id="outputLinks" rows="10" readonly
+        placeholder="نتیجهٔ پردازش اینجا نمایش داده می‌شود..."></textarea>
       <div class="stats" id="outputStats"></div>
     </section>
 
-    <!-- 错误区 -->
+    <!-- بخش خطاها -->
     <section class="card error-card" id="errorCard" style="display:none">
       <h2 class="card-title error-title">خطاهای ورودی</h2>
       <ul id="errorList" class="error-list"></ul>
